@@ -6,10 +6,11 @@ using UnityEditor;
 
 using extOpenNodes.Editor.Environment;
 using extOpenNodes.Editor.Windows;
+using System.Collections;
 
 namespace extOpenNodes.Editor.Panels
 {
-    public class ONPanelWorkflow : ONPanel
+    public class ONWorkflowPanel : ONPanel
     {
         #region Static Private Vars
 
@@ -52,20 +53,20 @@ namespace extOpenNodes.Editor.Panels
 
         #region Public Methods
 
-        public ONPanelWorkflow(ONWindow parentWindow, string panelId) : base(parentWindow, panelId)
+        public ONWorkflowPanel(ONWindow parentWindow, string panelId) : base(parentWindow, panelId)
         {
             _workflowEditor = new ONWorkflowEnvironment(parentWindow);
         }
-
-        #endregion
-
-        #region Protected Methods
 
         public override void Update()
         {
             _workflowEditor.Update();
             _parentWindow.Repaint();
         }
+
+        #endregion
+
+        #region Protected Methods
 
         protected override void DrawContent(Rect contentRect)
         {
@@ -88,7 +89,8 @@ namespace extOpenNodes.Editor.Panels
             var resetPos = GUILayout.Button(_resetViewPositionContent, EditorStyles.toolbarButton);
             if (resetPos)
             {
-                _workflowEditor.PositionOffset = Vector2.zero;
+                StopAllCoroutines();
+                StartCoroutine(ResetPositionCoroutine());
             }
 
             GUILayout.FlexibleSpace();
@@ -127,6 +129,30 @@ namespace extOpenNodes.Editor.Panels
             GUI.color = defaultColor;
 
             _workflowEditor.Draw(contentRect);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private IEnumerator ResetPositionCoroutine()
+        {
+            var velocity = Vector2.zero;
+            var distance = Vector2.Distance(_workflowEditor.PositionOffset, Vector2.zero);
+            var startTime = EditorApplication.timeSinceStartup;
+
+            while (distance > 0.01f)
+            {
+                var timeDelta = (float)(EditorApplication.timeSinceStartup - startTime);
+
+                _workflowEditor.PositionOffset = Vector2.SmoothDamp(_workflowEditor.PositionOffset, Vector2.zero, ref velocity, 0.2f, 100, timeDelta);
+
+                distance = Vector2.Distance(_workflowEditor.PositionOffset, Vector2.zero);
+
+                yield return null;
+            }
+
+            _workflowEditor.PositionOffset = Vector2.zero;
         }
 
         #endregion

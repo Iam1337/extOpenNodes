@@ -116,12 +116,6 @@ namespace extOpenNodes.Editor.Panels
             _parentWindow = parentWindow;
         }
 
-        [Obsolete("\"SetContentRect(Rect)\" is deprecated, please use \"Rect\" instead.")]
-        public virtual void SetContentRect(Rect rect)
-        {
-            _rect = rect;
-        }
-
         public virtual void Update()
         { }
 

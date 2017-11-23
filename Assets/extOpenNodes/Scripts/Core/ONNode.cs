@@ -28,12 +28,20 @@ namespace extOpenNodes.Core
             get { return _outputProperties; }
         }
 
+#if UNITY_EDITOR
         // ONLY EDITOR
         public bool CustomInspector
         {
             get { return _customInspector; }
             set { _customInspector = value; }
         }
+
+        public bool HideInspector
+        {
+            get { return _hideInspector; }
+            set { _hideInspector = value; }
+        }
+#endif
 
         #endregion
 
@@ -48,9 +56,14 @@ namespace extOpenNodes.Core
         [SerializeField]
         private Component _target;
 
+#if UNITY_EDITOR
         // ONLY EDITOR
         [SerializeField]
         private bool _customInspector;
+
+        [SerializeField]
+        private bool _hideInspector;
+#endif
 
         #endregion
 

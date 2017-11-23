@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+/* Copyright (c) 2017 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -26,7 +26,7 @@ namespace extOpenNodes.Editor.Editors
             var open = GUILayout.Button(_openContent, GUILayout.Height(50f));
             if (open)
             {
-                ONWindowWorkflow.OpenWorkflow((ONWorkflow)target);
+                ONWorkflowWindow.OpenWorkflow((ONWorkflow)target);
             }
 
             GUILayout.EndHorizontal();

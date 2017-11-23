@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+/* Copyright (c) 2017 ExT (V.Sigalkin) */
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -27,7 +27,7 @@ namespace extOpenNodes.Editor
 
             if (autoOpen)
             {
-                ONWindowWorkflow.OpenWorkflow(workflow);
+                ONWorkflowWindow.OpenWorkflow(workflow);
             }
 
             return workflow;

@@ -265,10 +265,20 @@ namespace extOpenNodes.Editor.Environment
             if (!Node.CustomInspector)
             {
                 ONEditorLayout.DrawIOHeader(Node);
-                GUILayout.Label(_inspectorsContent, ONEditorStyles.CenterBoldLabel);
+
+                GUI.color = Node.HideInspector ? Color.grey : defaultColor;
+                var hideButton = GUILayout.Button(_inspectorsContent, GUILayout.Height(18));
+                if (hideButton)
+                {
+                    Node.HideInspector = !Node.HideInspector;
+                }
+                GUI.color = defaultColor;
             }
 
-            _targetEditor.OnInspectorGUI();
+            if (!Node.HideInspector)
+            {
+                _targetEditor.OnInspectorGUI();
+            }
 
             GUI.color = defaultColor;
         }

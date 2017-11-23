@@ -8,7 +8,7 @@ using extOpenNodes.Editor.Panels;
 
 namespace extOpenNodes.Editor.Windows
 {
-    public class ONWindowWorkflow : ONWindow<ONWindowWorkflow, ONPanelWorkflow>
+    public class ONWorkflowWindow : ONWindow<ONWorkflowWindow, ONWorkflowPanel>
     {
         #region Static Public Methods
 

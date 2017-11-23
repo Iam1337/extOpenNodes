@@ -135,73 +135,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a665b971cbc15448cb9e0ea82052bb9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nodes:
-  - viewerRect:
-      serializedVersion: 2
-      x: 182.5
-      y: 40
-      width: 175
-      height: 59
-    _elementId: c481ddf2bff045a6a4c57ee1b4a7287c
-    _name: Debug
-    _inputProperties:
-    - viewerRect:
-        serializedVersion: 2
-        x: -18
-        y: 39
-        width: 16
-        height: 16
-      _elementId: 58d8bb0671bc4a17a2ffb29427955337
-      _name: Value
-      _index: 0
-      _nodeId: c481ddf2bff045a6a4c57ee1b4a7287c
-      _targetCast: 0
-      _propertyType: 0
-      _reflectionMember:
-        target: {fileID: 406188922}
-        member: Value
-    _outputProperties: []
-    _target: {fileID: 406188922}
-    _customInspector: 1
-  - viewerRect:
-      serializedVersion: 2
-      x: -19
-      y: 40
-      width: 150
-      height: 59
-    _elementId: dccffecfb26a4c8f8fc6977889afe0eb
-    _name: Float
-    _inputProperties: []
-    _outputProperties:
-    - viewerRect:
-        serializedVersion: 2
-        x: 152
-        y: 39
-        width: 16
-        height: 16
-      _elementId: 1234e81f286c4f86861aceeeb77da3a9
-      _name: Value
-      _index: 0
-      _nodeId: dccffecfb26a4c8f8fc6977889afe0eb
-      _targetCast: 0
-      _propertyType: 1
-      _reflectionMember:
-        target: {fileID: 406188924}
-        member: Value
-    _target: {fileID: 406188924}
-    _customInspector: 1
-  _links:
-  - viewerRect:
-      serializedVersion: 2
-      x: 0
-      y: 0
-      width: 0
-      height: 0
-    _elementId: 8d238a3b30d6443b80b358190255a7aa
-    _name: 
-    _sourceId: 1234e81f286c4f86861aceeeb77da3a9
-    _targetId: 58d8bb0671bc4a17a2ffb29427955337
-    _linkType: 0
+  _nodes: []
+  _links: []
   _nodesRoot: {fileID: 406188920}
 --- !u!4 &208130728
 Transform:
@@ -228,6 +163,11 @@ GameObject:
   - component: {fileID: 406188922}
   - component: {fileID: 406188923}
   - component: {fileID: 406188924}
+  - component: {fileID: 406188925}
+  - component: {fileID: 406188926}
+  - component: {fileID: 406188929}
+  - component: {fileID: 406188928}
+  - component: {fileID: 406188927}
   m_Layer: 0
   m_Name: NO Workflow Nodes
   m_TagString: Untagged
@@ -273,6 +213,92 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debug: 0
 --- !u!114 &406188924
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e17e325feb9c4594ac2d5d80023e8d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 0
+--- !u!114 &406188925
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61bf953075b734b669017f191fd5d99a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &406188926
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd7568a727e74a9493c3e12baa38541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Ev1:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event1, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  Ev2:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event2, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+--- !u!114 &406188927
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd7568a727e74a9493c3e12baa38541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Ev1:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event1, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  Ev2:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event2, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+--- !u!114 &406188928
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd7568a727e74a9493c3e12baa38541, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Ev1:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event1, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+  Ev2:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: extOpenNodes.Nodes.Event2, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+--- !u!114 &406188929
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

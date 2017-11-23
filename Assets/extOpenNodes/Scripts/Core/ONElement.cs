@@ -36,6 +36,7 @@ namespace extOpenNodes.Core
         }
 
 #if UNITY_EDITOR
+        // EDITOR ONLY
         public virtual Vector2 ViewerPosition
         {
             get { return viewerRect.position; }
@@ -57,6 +58,7 @@ namespace extOpenNodes.Core
         protected ONWorkflow workflow; // Hack...
 
 #if UNITY_EDITOR
+        // EDITOR ONLY
         [SerializeField]
         protected Rect viewerRect;
 #endif

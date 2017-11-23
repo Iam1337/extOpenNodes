@@ -22,6 +22,10 @@ namespace extOpenNodes.Editor
 
         private static GUIStyle _centerBoldLabel;
 
+        private static GUIStyle _gridRuleX;
+
+        private static GUIStyle _gridRuleY;
+
         #endregion
 
         #region Static Public Vars
@@ -56,6 +60,36 @@ namespace extOpenNodes.Editor
                 }
 
                 return _centerBoldLabel;
+            }
+        }
+
+        public static GUIStyle GridRuleX
+        {
+            get 
+            {
+                if (_gridRuleX == null)
+                {
+                    _gridRuleX = new GUIStyle(EditorStyles.label);
+                    _gridRuleX.normal.textColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                    _gridRuleX.fontSize = 10;
+                    _gridRuleX.alignment = TextAnchor.MiddleCenter;
+                }
+
+                return _gridRuleX;
+            }
+        }
+
+        public static GUIStyle GridRuleY
+        {
+            get
+            {
+                if (_gridRuleY == null)
+                {
+                    _gridRuleY = new GUIStyle(GridRuleX);
+                    _gridRuleY.alignment = TextAnchor.MiddleRight;
+                }
+
+                return _gridRuleY;
             }
         }
 
