@@ -168,6 +168,7 @@ GameObject:
   - component: {fileID: 406188929}
   - component: {fileID: 406188928}
   - component: {fileID: 406188927}
+  - component: {fileID: 406188930}
   m_Layer: 0
   m_Name: NO Workflow Nodes
   m_TagString: Untagged
@@ -299,6 +300,18 @@ MonoBehaviour:
     m_TypeName: extOpenNodes.Nodes.Event2, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
 --- !u!114 &406188929
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 406188920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e17e325feb9c4594ac2d5d80023e8d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  value: 0
+--- !u!114 &406188930
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}

@@ -71,7 +71,7 @@ namespace extOpenNodes.Editor
                 {
                     _gridRuleX = new GUIStyle(EditorStyles.label);
                     _gridRuleX.normal.textColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-                    _gridRuleX.fontSize = 10;
+                    _gridRuleX.fontSize = 7;
                     _gridRuleX.alignment = TextAnchor.MiddleCenter;
                 }
 

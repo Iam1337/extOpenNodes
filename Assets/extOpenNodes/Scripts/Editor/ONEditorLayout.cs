@@ -60,6 +60,8 @@ namespace extOpenNodes.Editor
                     var ruleSize = ONEditorStyles.GridRuleX.CalcSize(ruleContent);
 
                     rulePosition.size = ruleSize;
+                    rulePosition.center = new Vector2(linePosition, container.y + ruleSize.y / 2f);
+                    GUI.Label(rulePosition, ruleContent, ONEditorStyles.GridRuleX);
                     rulePosition.center = new Vector2(linePosition, container.y + container.height - ruleSize.y / 2f);
                     GUI.Label(rulePosition, ruleContent, ONEditorStyles.GridRuleX);
                 }
@@ -80,6 +82,8 @@ namespace extOpenNodes.Editor
                     var ruleSize = ONEditorStyles.GridRuleY.CalcSize(ruleContent);
 
                     rulePosition.size = ruleSize;
+                    rulePosition.center = new Vector2(container.x + ruleSize.x, linePosition);
+                    GUI.Label(rulePosition, ruleContent, ONEditorStyles.GridRuleY);
                     rulePosition.center = new Vector2(container.x + container.width - ruleSize.x, linePosition);
                     GUI.Label(rulePosition, ruleContent, ONEditorStyles.GridRuleY);
                 }
