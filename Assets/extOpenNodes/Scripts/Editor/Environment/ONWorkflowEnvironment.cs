@@ -251,7 +251,7 @@ namespace extOpenNodes.Editor.Environments
                 spawnPosition = GetEnvironmentMousePosition();
             }
 
-            foreach (var nodeData in ONNodesUtils.NodesDatas)
+            foreach (var nodeData in ONNodesUtils.NodesTypes)
             {
                 nodesContent.Add(nodeData.Content);
             }
@@ -269,7 +269,7 @@ namespace extOpenNodes.Editor.Environments
             var component = node.Target;
             var componentType = component.GetType();
 
-            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+            var schemes = ONNodesUtils.GetSchemes(componentType);
             var selectIndex = -1;
 
             nodesContent.Add(new GUIContent("Create Scheme"));
@@ -563,7 +563,7 @@ namespace extOpenNodes.Editor.Environments
 
         private void NodeSpawnMenuCallback(object userData, string[] options, int select)
         {
-            var nodeData = ONNodesUtils.NodesDatas[select];
+            var nodeData = ONNodesUtils.NodesTypes[select];
 
             var componentType = nodeData.ComponentType;
             if (componentType == null) return;
@@ -593,7 +593,7 @@ namespace extOpenNodes.Editor.Environments
             else
             {
                 var index = select - 1;
-                var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+                var schemes = ONNodesUtils.GetSchemes(componentType);
 
                 ONNodesUtils.RebuildNode(_workflow, node, schemes[index]);
 

@@ -130,13 +130,13 @@ namespace extOpenNodes.Editor
 
         public static ONNodeScheme SchemesPopup(Type componentType, ONNodeScheme scheme, GUIContent content)
         {
-            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+            var schemes = ONNodesUtils.GetSchemes(componentType);
             var popupContent = new List<GUIContent>();
             var currentIndex = 0;
 
-            if (schemes.Length > 0)
+            if (schemes.Count > 0)
             {
-                for (var i = 0; i < schemes.Length; i++)
+                for (var i = 0; i < schemes.Count; i++)
                 {
                     if (scheme == schemes[i])
                     {
@@ -153,7 +153,7 @@ namespace extOpenNodes.Editor
 
             currentIndex = EditorGUILayout.Popup(content, currentIndex, popupContent.ToArray());
 
-            return schemes.Length == 0 ? null : schemes[currentIndex];
+            return schemes.Count == 0 ? null : schemes[currentIndex];
         }
 
         public static string InputMembersPopup(Rect rect, Type targetType, string memberName, GUIContent content)

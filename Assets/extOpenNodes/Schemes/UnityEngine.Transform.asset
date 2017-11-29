@@ -8,22 +8,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4487aa96c2ec64211995d9ce805ba7f7, type: 3}
+  m_Script: {fileID: 11500000, guid: db869141ea79d42a8ac7ee3c05f89546, type: 3}
   m_Name: UnityEngine.Transform
   m_EditorClassIdentifier: 
-  schemaName: Transform
+  schemeName: Transform
   typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null
   selfOutput: 0
   inputPropertiesSchemes:
-  - name: Position
-    member: position
+  - name: Local Position
+    member: localPosition
     typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     propertyType: 0
   outputPropertiesSchemes:
-  - name: Position
-    member: position
+  - name: Local Position
+    member: localPosition
     typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
     propertyType: 1

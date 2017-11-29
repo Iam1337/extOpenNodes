@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
 
+using System;
+
 using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Editors
@@ -83,6 +85,8 @@ namespace extOpenNodes.Editor.Editors
 
         public override void OnInspectorGUI()
         {
+            var defaultColor = GUI.color;
+
             serializedObject.Update();
 
             // LOGO
@@ -97,9 +101,11 @@ namespace extOpenNodes.Editor.Editors
             GUILayout.BeginVertical("box");
 
             // SCHEME NAME
+            GUI.color = IsNameAvaible() ? defaultColor : Color.red;
             EditorGUILayout.PropertyField(_nameProperty, _nameContent);
+            GUI.color = defaultColor;
 
-            // SCHEME NAME
+            // SELF OUTPUT NAME
             EditorGUILayout.PropertyField(_selfOutputProperty, _selfOutputContent);
 
             GUILayout.EndVertical();
@@ -131,6 +137,23 @@ namespace extOpenNodes.Editor.Editors
         #endregion
 
         #region Private Methods
+
+        private bool IsNameAvaible()
+        {
+            var schemes = ONNodesUtils.GetSchemes(_target.TargetType);
+            foreach (var scheme in schemes)
+            {
+                if (scheme == _target)
+                    continue;
+
+                if (scheme.Name.Equals(_target.Name, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         private void OnInputAddCallback(ReorderableList list)
         {

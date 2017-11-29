@@ -6,7 +6,6 @@ using UnityEditor;
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -24,31 +23,24 @@ namespace extOpenNodes.Editor
             public Type ComponentType;
 
             public GUIContent Content;
-
-            public ONNodeScheme Scheme;
         }
 
         #endregion
 
         #region Static Public Vars
 
-        public static List<NodeData> NodesDatas
+        public static List<NodeData> NodesTypes
         {
-            get { return _nodesDatas; }
-        }
-
-        public static List<ONNodeScheme> Schemes
-        {
-            get { return _schemes; }
+            get { return _nodesTypes; }
         }
 
         #endregion
 
         #region Static Private Vars
 
-        private static List<ONNodeScheme> _schemes = new List<ONNodeScheme>();
+        private static List<NodeData> _nodesTypes = new List<NodeData>();
 
-        private static List<NodeData> _nodesDatas = new List<NodeData>();
+        private static Dictionary<Type, ONNodeScheme> _generatedSchemes = new Dictionary<Type, ONNodeScheme>();
 
         private static string _schemesPath = "Assets/extOpenNodes/Schemes";
 
@@ -58,47 +50,19 @@ namespace extOpenNodes.Editor
 
         static ONNodesUtils()
         {
-            ReloadSchemes();
             ReloadNodes();
         }
 
-        public static ONNodeScheme[] GetNodeSchemes(Type componentType)
+        public static List<ONNodeScheme> GetSchemes(Type componentType)
         {
-            var nodeSchemes = new List<ONNodeScheme>();
-            if (componentType == null) return nodeSchemes.ToArray();
+            var schemes = GetSchemesInternal(componentType);
 
-            var nodeData = _nodesDatas.FirstOrDefault((nd) => nd.ComponentType == componentType);
-            if (nodeData != null) nodeSchemes.Add(nodeData.Scheme);
-
-            foreach (var scheme in _schemes)
+            if (componentType != null && _generatedSchemes.ContainsKey(componentType))
             {
-                if (componentType.IsEqualsOrSubclass(scheme.TargetType))
-                {
-                    nodeSchemes.Add(scheme);
-                }
+                schemes.Insert(0, _generatedSchemes[componentType]);
             }
 
-            return nodeSchemes.ToArray();
-        }
-
-        public static void ReloadSchemes()
-        {
-            _schemes.Clear();
-
-            if (!Directory.Exists(_schemesPath))
-                Directory.CreateDirectory(_schemesPath);
-
-            var guids = AssetDatabase.FindAssets("t:" + typeof(ONNodeScheme).Name);
-
-            foreach (var guid in guids)
-            {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
-                var scheme = AssetDatabase.LoadAssetAtPath<ONNodeScheme>(assetPath);
-                if (scheme == null) continue;
-
-                _schemes.Add(scheme);
-            }
+            return schemes;
         }
 
         public static ONNodeScheme CreateScheme(Type componentType)
@@ -123,21 +87,7 @@ namespace extOpenNodes.Editor
 
             EditorUtility.FocusProjectWindow();
 
-            _schemes.Add(scheme);
-
             return scheme;
-        }
-
-        public static void RemoveScheme(ONNodeScheme scheme)
-        {
-            if (_schemes.Contains(scheme))
-                _schemes.Remove(scheme);
-
-            var path = AssetDatabase.GetAssetPath(scheme);
-            if (string.IsNullOrEmpty(path)) return;
-
-            AssetDatabase.DeleteAsset(path);
-            AssetDatabase.Refresh();
         }
 
         public static void RebuildNode(ONWorkflow workflow, ONNode node, ONNodeScheme scheme)
@@ -195,7 +145,7 @@ namespace extOpenNodes.Editor
 
         public static void ReloadNodes()
         {
-            _nodesDatas.Clear();
+            _nodesTypes.Clear();
 
             var dictionary = new Dictionary<string, Type>();
             var guids = AssetDatabase.FindAssets("t:" + typeof(MonoScript).Name);
@@ -218,6 +168,28 @@ namespace extOpenNodes.Editor
 
         #region Static Private Methods
 
+        private static List<ONNodeScheme> GetSchemesInternal(Type componentType)
+        {
+            var schemes = new List<ONNodeScheme>();
+
+            if (!Directory.Exists(_schemesPath))
+                Directory.CreateDirectory(_schemesPath);
+
+            var guids = AssetDatabase.FindAssets("t:" + typeof(ONNodeScheme).Name);
+
+            foreach (var guid in guids)
+            {
+                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+
+                var scheme = AssetDatabase.LoadAssetAtPath<ONNodeScheme>(assetPath);
+                if (scheme == null || !componentType.IsEqualsOrSubclass(scheme.TargetType)) continue;
+
+                schemes.Add(scheme);
+            }
+
+            return schemes;
+        }
+
         private static void ProcessType(Dictionary<string, Type> dictionary, Type componentType)
         {
             if (componentType.IsAbstract) return;
@@ -239,9 +211,9 @@ namespace extOpenNodes.Editor
             var nodeData = new NodeData();
             nodeData.ComponentType = componentType;
             nodeData.Content = new GUIContent(name);
-            nodeData.Scheme = GenerateScheme(componentType);
 
-            _nodesDatas.Add(nodeData);
+            _generatedSchemes.Add(componentType, GenerateScheme(componentType));
+            _nodesTypes.Add(nodeData);
         }
 
         private static ONNodeScheme GenerateScheme(Type componentType)

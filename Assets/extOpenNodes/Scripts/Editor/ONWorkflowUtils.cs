@@ -6,7 +6,6 @@ using UnityEngine.Events;
 using UnityEditor;
 
 using System;
-using System.IO;
 using System.Reflection;
 
 using extOpenNodes.Core;
@@ -57,8 +56,8 @@ namespace extOpenNodes.Editor
            
             var componentType = component.GetType();
 
-            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
-            if (schemes.Length > 0)
+            var schemes = ONNodesUtils.GetSchemes(componentType);
+            if (schemes.Count > 0)
             {
                 ONNodesUtils.RebuildNode(workflow, node, schemes[0]);
             }
