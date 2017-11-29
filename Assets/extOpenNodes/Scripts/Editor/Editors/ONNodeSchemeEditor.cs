@@ -1,4 +1,4 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+/* Copyright (c) 2017 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -9,12 +9,12 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Editors
 {
-    [CustomEditor(typeof(ONNodeSchema), true)]
-    public class ONNodeSchemaEditor : UnityEditor.Editor
+    [CustomEditor(typeof(ONNodeScheme), true)]
+    public class ONNodeSchemeEditor : UnityEditor.Editor
     {
         #region Private Static Vars
 
-        private static readonly GUIContent _workflowContent = new GUIContent("Node Schema:");
+        private static readonly GUIContent _workflowContent = new GUIContent("Node Scheme:");
 
         private static readonly GUIContent _nameContent = new GUIContent("Name:");
 
@@ -36,7 +36,7 @@ namespace extOpenNodes.Editor.Editors
 
         #region Private Vars
 
-        private ONNodeSchema _target;
+        private ONNodeScheme _target;
 
         private SerializedProperty _nameProperty;
 
@@ -56,9 +56,9 @@ namespace extOpenNodes.Editor.Editors
 
         protected void OnEnable()
         {
-            _target = target as ONNodeSchema;
+            _target = target as ONNodeScheme;
 
-            _nameProperty = serializedObject.FindProperty("schemaName");
+            _nameProperty = serializedObject.FindProperty("schemeName");
             _selfOutputProperty = serializedObject.FindProperty("selfOutput");
             _inputPropertiesSchemesProperty = serializedObject.FindProperty("inputPropertiesSchemes");
             _outputPropertiesSchemesProperty = serializedObject.FindProperty("outputPropertiesSchemes");
@@ -96,10 +96,10 @@ namespace extOpenNodes.Editor.Editors
             GUILayout.Label(_workflowContent, EditorStyles.boldLabel);
             GUILayout.BeginVertical("box");
 
-            // SCHEMA NAME
+            // SCHEME NAME
             EditorGUILayout.PropertyField(_nameProperty, _nameContent);
 
-            // SCHEMA NAME
+            // SCHEME NAME
             EditorGUILayout.PropertyField(_selfOutputProperty, _selfOutputContent);
 
             GUILayout.EndVertical();

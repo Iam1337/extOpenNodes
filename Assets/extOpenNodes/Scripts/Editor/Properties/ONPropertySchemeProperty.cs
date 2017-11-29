@@ -10,8 +10,8 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Properties
 {
-    [CustomPropertyDrawer(typeof(ONPropertySchema))]
-    public class ONPropertySchemaProperty : PropertyDrawer
+    [CustomPropertyDrawer(typeof(ONPropertyScheme))]
+    public class ONPropertySchemeProperty : PropertyDrawer
     {
         #region Public Methods
 

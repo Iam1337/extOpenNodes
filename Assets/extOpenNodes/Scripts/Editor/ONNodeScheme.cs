@@ -8,14 +8,14 @@ using System.Collections.Generic;
 namespace extOpenNodes.Editor
 {
     [Serializable]
-    public class ONNodeSchema : ScriptableObject
+    public class ONNodeScheme : ScriptableObject
     {
         #region Public Vars
 
         public string Name
         {
-            get { return schemaName; }
-            set { schemaName = value; }
+            get { return schemeName; }
+            set { schemeName = value; }
         }
 
         public bool SelfOutput
@@ -24,13 +24,13 @@ namespace extOpenNodes.Editor
             set { selfOutput = value; }
         }
 
-        public List<ONPropertySchema> InputPropertiesSchemes
+        public List<ONPropertyScheme> InputPropertiesSchemes
         {
             get { return inputPropertiesSchemes; }
             set { inputPropertiesSchemes = value; }
         }
 
-        public List<ONPropertySchema> OutputPropertiesSchemes
+        public List<ONPropertyScheme> OutputPropertiesSchemes
         {
             get { return outputPropertiesSchemes; }
             set { outputPropertiesSchemes = value; }
@@ -63,7 +63,7 @@ namespace extOpenNodes.Editor
         #region Protected Vars
 
         [SerializeField]
-        protected string schemaName;
+        protected string schemeName;
 
         [SerializeField]
         protected string typeName;
@@ -72,10 +72,10 @@ namespace extOpenNodes.Editor
         protected bool selfOutput;
 
         [SerializeField]
-        protected List<ONPropertySchema> inputPropertiesSchemes = new List<ONPropertySchema>();
+        protected List<ONPropertyScheme> inputPropertiesSchemes = new List<ONPropertyScheme>();
 
         [SerializeField]
-        protected List<ONPropertySchema> outputPropertiesSchemes = new List<ONPropertySchema>();
+        protected List<ONPropertyScheme> outputPropertiesSchemes = new List<ONPropertyScheme>();
 
         #endregion
 

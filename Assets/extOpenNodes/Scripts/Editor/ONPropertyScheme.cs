@@ -9,7 +9,7 @@ using extOpenNodes.Core;
 namespace extOpenNodes.Editor
 {
     [Serializable]
-    public class ONPropertySchema
+    public class ONPropertyScheme
     {
         #region Public Vars
 

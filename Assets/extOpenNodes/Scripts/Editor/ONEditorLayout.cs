@@ -128,7 +128,7 @@ namespace extOpenNodes.Editor
             EditorGUILayout.EndHorizontal();
         }
 
-        public static ONNodeSchema SchemesPopup(Type componentType, ONNodeSchema schema, GUIContent content)
+        public static ONNodeScheme SchemesPopup(Type componentType, ONNodeScheme scheme, GUIContent content)
         {
             var schemes = ONNodesUtils.GetNodeSchemes(componentType);
             var popupContent = new List<GUIContent>();
@@ -138,7 +138,7 @@ namespace extOpenNodes.Editor
             {
                 for (var i = 0; i < schemes.Length; i++)
                 {
-                    if (schema == schemes[i])
+                    if (scheme == schemes[i])
                     {
                         currentIndex = i;
                     }

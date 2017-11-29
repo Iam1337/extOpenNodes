@@ -272,11 +272,11 @@ namespace extOpenNodes.Editor.Environments
             var schemes = ONNodesUtils.GetNodeSchemes(componentType);
             var selectIndex = -1;
 
-            nodesContent.Add(new GUIContent("Create Schema"));
+            nodesContent.Add(new GUIContent("Create Scheme"));
 
-            foreach (var schema in schemes)
+            foreach (var scheme in schemes)
             {
-                nodesContent.Add(new GUIContent("Change Schema/" + schema.Name));
+                nodesContent.Add(new GUIContent("Change Scheme/" + scheme.Name));
             }
 
             var popupItems = nodesContent.ToArray();
@@ -588,7 +588,7 @@ namespace extOpenNodes.Editor.Environments
 
             if (select == 0)
             {
-                ONNodesUtils.CreateSchema(componentType);
+                ONNodesUtils.CreateScheme(componentType);
             }
             else
             {
