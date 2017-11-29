@@ -54,63 +54,20 @@ namespace extOpenNodes.Editor
         public static ONNode CreateNode(ONWorkflow workflow, Component component)
         {
             var node = workflow.CreateNode(component);
+           
             var componentType = component.GetType();
 
-            var nodeAttribue = ONUtilities.GetAttribute<ONNodeAttribute>(componentType, true);
-            if (nodeAttribue != null)
+            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+            if (schemes.Length > 0)
             {
-                node.Name = Path.GetFileName(nodeAttribue.Name);
-                node.CustomInspector = nodeAttribue.CustomInspector;
+                ONNodesUtils.RebuildNode(workflow, node, schemes[0]);
+            }
+            else
+            {
+                node.Name = ONEditorUtils.TypeFriendlyName(componentType);
             }
 
-            // SELF PROPERTY
-            var selfAttribute = ONUtilities.GetAttribute<ONSelfOutputAttribute>(componentType, true);
-            if (selfAttribute != null)
-            {
-                var property = workflow.CreateProperty(node, ONPropertyType.Output);
-                property.Name = selfAttribute.Name;
-                property.TargetCast = true;
-                property.SortIndex = selfAttribute.SortIndex;
-            }
-
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var membersInfos = componentType.GetMembers(bindingFlags);
-            foreach (var memberInfo in membersInfos)
-            {
-                if (memberInfo is FieldInfo || memberInfo is PropertyInfo || memberInfo is MethodInfo)
-                {
-                    var methodInfo = memberInfo as MethodInfo;
-                    if (methodInfo != null && methodInfo.IsSpecialName)
-                    {
-                        continue;
-                    }
-
-                    var attributes = memberInfo.GetCustomAttributes(typeof(ONPropertyAttribute), true);
-                    if (attributes.Length == 0) continue;
-
-                    var reflectionMember = new ONReflectionMember();
-                    reflectionMember.Target = component;
-                    reflectionMember.Member = memberInfo.Name;
-
-                    foreach (ONPropertyAttribute attribute in attributes)
-                    {
-                        if (memberInfo is PropertyInfo)
-                        {
-                            if ((attribute.PropertyType == ONPropertyType.Input && !reflectionMember.CanWrite) ||
-                                (attribute.PropertyType == ONPropertyType.Output && !reflectionMember.CanRead))
-                                continue;
-                        }
-
-                        var property = workflow.CreateProperty(node, attribute.PropertyType);
-                        property.ReflectionMember = reflectionMember;
-                        property.Name = attribute.Name;
-                        property.SortIndex = attribute.SortIndex;
-                    }
-                }
-            }
-
-            node.InputProperties.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
-            node.OutputProperties.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
+            if (!node.CustomInspector) node.HideInspector = true;
 
             return node;
         }
@@ -120,7 +77,7 @@ namespace extOpenNodes.Editor
             var component = node.Target;
             if (component != null)
             {
-                if (component.transform.parent == workflow.NodesRoot)
+                if (component.gameObject == workflow.NodesRoot)
                 {
                     GameObject.DestroyImmediate(component);
                 }
@@ -183,7 +140,7 @@ namespace extOpenNodes.Editor
         public static void RemoveLinks(ONWorkflow workflow, ONProperty property)
         {
             var links = workflow.GetElementLinks(property);
-            foreach(var link in links)
+            foreach (var link in links)
             {
                 RemoveLink(workflow, link);
             }

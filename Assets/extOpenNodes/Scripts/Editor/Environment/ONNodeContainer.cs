@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 using extOpenNodes.Core;
 
-namespace extOpenNodes.Editor.Environment
+namespace extOpenNodes.Editor.Environments
 {
     public class ONNodeContainer : ONElementContainer<ONNode>
     {
@@ -34,7 +34,6 @@ namespace extOpenNodes.Editor.Environment
         public ONNode Node
         {
             get { return element; }
-            set { element = value; }
         }
 
         #endregion
@@ -104,7 +103,7 @@ namespace extOpenNodes.Editor.Environment
 
         public override void Draw()
         {
-            var viewedRect = new Rect(-Environment.PositionOffset, Environment.Size);
+            var viewedRect = new Rect(-Environment.Position, Environment.Size);
             _drawZone.position = LocalPosition;
 
             if (_initNode && !viewedRect.Overlaps(_drawZone))
@@ -192,23 +191,6 @@ namespace extOpenNodes.Editor.Environment
             }
         }
 
-        public ONPropertyContainer GetPropertyVisual(ONProperty property)
-        {
-            foreach (var propertyVisual in _propertyVisuals)
-            {
-                if (propertyVisual.Property == property)
-                {
-                    return propertyVisual;
-                }
-            }
-
-            return null;
-        }
-
-        #endregion
-
-        #region Protected Methods
-
         #endregion
 
         #region Private Methods
@@ -225,16 +207,16 @@ namespace extOpenNodes.Editor.Environment
 
             if (Event.current.type == EventType.MouseDown && Event.current.button == (int)MouseButton.RightMouse)
             {
-                _clickOffset = Environment.PositionOffset;
+                _clickOffset = Environment.Position;
 
                 Event.current.Use();
             }
 
             if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.RightMouse)
             {
-                if (Vector2.Distance(_clickOffset, Environment.PositionOffset) < 0.1f && Event.current.clickCount == 1)
+                if (Vector2.Distance(_clickOffset, Environment.Position) < 0.1f && Event.current.clickCount == 1)
                 {
-                    //TODO: Node settings.
+                    Environment.ShowNodeMenu(Node);
                 }
 
                 Event.current.Use();
@@ -244,18 +226,6 @@ namespace extOpenNodes.Editor.Environment
         private void DrawNodeWindow(int nodeId)
         {
             var defaultColor = GUI.color;
-
-            if (Node.Target == null)
-            {
-                Environment.RemoveNodeContainer(this);
-                DestroyEditor();
-                return;
-            }
-
-            if (_targetEditor != null && _targetEditor.target != Node.Target)
-            {
-                DestroyEditor();
-            }
 
             if (_targetEditor == null)
             {

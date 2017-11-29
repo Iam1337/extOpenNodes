@@ -29,7 +29,7 @@ namespace extOpenNodes.Core
         }
 
 #if UNITY_EDITOR
-        // ONLY EDITOR
+        // EDITOR ONLY 
         public bool CustomInspector
         {
             get { return _customInspector; }
@@ -57,7 +57,7 @@ namespace extOpenNodes.Core
         private Component _target;
 
 #if UNITY_EDITOR
-        // ONLY EDITOR
+        // EDITOR ONLY 
         [SerializeField]
         private bool _customInspector;
 

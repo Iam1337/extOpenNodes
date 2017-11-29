@@ -39,7 +39,7 @@ namespace extOpenNodes
         #endregion
     }
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Method)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class ONInputAttribute : ONPropertyAttribute
     {
         #region Public Methods

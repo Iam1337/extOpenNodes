@@ -83,13 +83,5 @@ namespace extOpenNodes.Core
         { }
 
         #endregion
-
-        #region Protected Methods
-
-        #endregion
-
-        #region Private Methods
-
-        #endregion
     }
 }

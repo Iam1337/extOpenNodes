@@ -61,7 +61,7 @@ namespace extOpenNodes.Editor
                         Resources.UnloadAsset(_viewBackgroundTexture);
                     }
 
-                    //TODO: Makedark skin texture.
+                    //TODO: Make dark skin texture.
                     _viewBackgroundTexture = LoadTexture(_isProSkin ? "ON_viewbackground" : "ON_viewbackground");
                 }
 
@@ -82,7 +82,7 @@ namespace extOpenNodes.Editor
                         Resources.UnloadAsset(_viewBorderTexture);
                     }
 
-                    //TODO: Makedark skin texture.
+                    //TODO: Make dark skin texture.
                     _viewBorderTexture = LoadTexture(_isProSkin ? "ON_viewborder" : "ON_viewborder");
                 }
 
@@ -123,7 +123,7 @@ namespace extOpenNodes.Editor
                         Resources.UnloadAsset(_linkTexture);
                     }
 
-                    //TODO: Makedark skin texture.
+                    //TODO: Make dark skin texture.
                     _linkTexture = LoadTexture(_isProSkin ? "ON_link" : "ON_link");
                 }
 

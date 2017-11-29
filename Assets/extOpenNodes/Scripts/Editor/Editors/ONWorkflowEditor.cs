@@ -13,6 +13,8 @@ namespace extOpenNodes.Editor.Editors
     {
         #region Private Static Vars
 
+        private static readonly GUIContent _workflowContent = new GUIContent("Workflow:");
+
         private static readonly GUIContent _openContent = new GUIContent("Open Workflow");
 
         #endregion
@@ -21,7 +23,14 @@ namespace extOpenNodes.Editor.Editors
 
         public override void OnInspectorGUI()
         {
-            GUILayout.BeginHorizontal("box");
+            // LOGO
+            GUILayout.Space(10);
+            ONEditorLayout.Logo();
+            GUILayout.Space(5);
+
+            // INSPECTOR
+            GUILayout.Label(_workflowContent, EditorStyles.boldLabel);
+            GUILayout.BeginVertical("box");
 
             var open = GUILayout.Button(_openContent, GUILayout.Height(50f));
             if (open)
@@ -29,7 +38,7 @@ namespace extOpenNodes.Editor.Editors
                 ONWorkflowWindow.OpenWorkflow((ONWorkflow)target);
             }
 
-            GUILayout.EndHorizontal();
+            GUILayout.EndVertical();
         }
 
         #endregion

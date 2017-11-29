@@ -1,21 +1,54 @@
 /* Copyright (c) 2017 ExT (V.Sigalkin) */
 
 using UnityEngine;
+//using UnityEngine.SceneManagement;
 
 using UnityEditor;
+using UnityEditor.Build;
+//using UnityEditor.SceneManagement;
 
 using extOpenNodes.Editor.Panels;
+
 
 namespace extOpenNodes.Editor.Windows
 {
     public class ONWorkflowWindow : ONWindow<ONWorkflowWindow, ONWorkflowPanel>
     {
+        #region Extensions
+
+        public class PreprocessBuild : IPreprocessBuild
+        {
+            #region Public Vars
+
+            public int callbackOrder { get { return 0; } }
+
+            #endregion
+
+            #region Public Methods
+
+            public void OnPreprocessBuild(BuildTarget target, string path)
+            {
+                if (Instance != null)
+                {
+                    var environment = Instance.rootPanel.Environment;
+                    if (environment != null)
+                    {
+                        environment.DestroyEditors();
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        #endregion
+
         #region Static Public Methods
 
-        [MenuItem("Window/extOpenNodes/Workflow Window", false, 0)]
+        [MenuItem("Window/extOpenNodes/Workflow", false, 0)]
         public static void ShowWindow()
         {
-            Instance.titleContent = new GUIContent("ON Workflow", ONEditorTextures.IronWall);
+            Instance.titleContent = new GUIContent("Workflow Editor", ONEditorTextures.IronWall);
             Instance.minSize = new Vector2(550, 200);
             Instance.Show();
         }
@@ -25,19 +58,23 @@ namespace extOpenNodes.Editor.Windows
             ShowWindow();
 
             Instance.Focus();
-            Instance.rootPanel.Workflow = workflow;
+            Instance.rootPanel.SetWorkflow(workflow);
 
-            if (workflow == null) ONEditorSettings.SetInt(Instance._lastWorkflowSettings, 0);
-            else ONEditorSettings.SetInt(Instance._lastWorkflowSettings, workflow.GetInstanceID());
+            if (workflow == null)
+            {
+                ONEditorSettings.SetInt(Instance._currentWorkflow, 0);
+            }
+            else
+            {
+                ONEditorSettings.SetInt(Instance._currentWorkflow, workflow.GetInstanceID());
+            }
         }
 
         #endregion
 
         #region Private Vars
 
-        private readonly string _lastWorkflowSettings = ONEditorSettings.Workflow + "lastworkflow";
-
-        private readonly string _positionOffsetSettings = ONEditorSettings.Workflow + "offset";
+        private readonly string _currentWorkflow = ONEditorSettings.Workflow + "currentWorkflow";
 
         #endregion
 
@@ -45,21 +82,33 @@ namespace extOpenNodes.Editor.Windows
 
         protected override void Update()
         {
-            if (rootPanel.Workflow == null)
+            if (rootPanel.GetWorkflow() == null)
             {
-                var instanceId = ONEditorSettings.GetInt(_lastWorkflowSettings, 0);
-                var workflow = EditorUtility.InstanceIDToObject(instanceId) as ONWorkflow;
-                if (workflow != null) rootPanel.Workflow = workflow;
+                LoadWindowSettings();
             }
 
             base.Update();
         }
 
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            //EditorSceneManager.sceneClosing += OnSceneClosingCallback;
+        }
+
         protected override void OnDisable()
         {
-            rootPanel.WorkflowEditor.DestroyInspectors();
+            rootPanel.Environment.DestroyEditors();
 
             base.OnDisable();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            //EditorSceneManager.sceneClosing -= OnSceneClosingCallback; 
         }
 
         #endregion
@@ -68,15 +117,39 @@ namespace extOpenNodes.Editor.Windows
 
         protected override void LoadWindowSettings()
         {
-            rootPanel.PositionOffset = ONEditorSettings.GetVector2(_positionOffsetSettings, Vector2.zero);
+            base.LoadWindowSettings();
+
+            var instanceId = ONEditorSettings.GetInt(_currentWorkflow, 0);
+            var workflow = EditorUtility.InstanceIDToObject(instanceId) as ONWorkflow;
+            if (workflow != null) rootPanel.SetWorkflow(workflow);
         }
 
         protected override void SaveWindowSettings()
         {
-            base.SaveWindowSettings();
+            var workflow = rootPanel.GetWorkflow();
+            if (workflow != null) ONEditorSettings.SetInt(_currentWorkflow, workflow.GetInstanceID());
 
-            ONEditorSettings.SetVector2(_positionOffsetSettings, rootPanel.PositionOffset);
+            base.SaveWindowSettings();
         }
+
+        #endregion
+
+        #region Private Methods
+
+        /*
+        private void OnSceneClosingCallback(Scene scene, bool removingScene)
+        {
+            var workflow = rootPanel.GetWorkflow();
+            if (workflow != null)
+            {
+                var workflowScene = workflow.gameObject.scene;
+                if (workflowScene == scene)
+                {
+                    rootPanel.SetWorkflow(null);
+                }
+            }
+        }
+        */
 
         #endregion
     }

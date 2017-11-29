@@ -2,11 +2,11 @@
 Node based Component Linking Tool for Unity3d.
 
 # Info
-Work In Process...
+Work In Progress...
 
 # ToDo:
-* Nodes editor for already completed components.
 * Workflow support as node.
 * Add more nodes.
 * Create normal ToDo and README.md.
 * Create base documentation.
+* Rewrite editor.

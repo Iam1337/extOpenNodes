@@ -4,9 +4,10 @@ using UnityEngine;
 
 using UnityEditor;
 
-using extOpenNodes.Editor.Environment;
-using extOpenNodes.Editor.Windows;
 using System.Collections;
+
+using extOpenNodes.Editor.Environments;
+using extOpenNodes.Editor.Windows;
 
 namespace extOpenNodes.Editor.Panels
 {
@@ -26,28 +27,16 @@ namespace extOpenNodes.Editor.Panels
 
         #region Public Vars
 
-        public Vector2 PositionOffset
+        public ONWorkflowEnvironment Environment
         {
-            get { return _workflowEditor.PositionOffset; }
-            set { _workflowEditor.PositionOffset = value; }
-        }
-
-        public ONWorkflowEnvironment WorkflowEditor
-        {
-            get { return _workflowEditor; }
-        }
-
-        public ONWorkflow Workflow
-        {
-            get { return _workflowEditor.Workflow; }
-            set { _workflowEditor.Workflow = value; }
+            get { return _environment; }
         }
 
         #endregion
 
         #region Private Vars
 
-        private ONWorkflowEnvironment _workflowEditor;
+        private ONWorkflowEnvironment _environment;
 
         #endregion
 
@@ -55,13 +44,37 @@ namespace extOpenNodes.Editor.Panels
 
         public ONWorkflowPanel(ONWindow parentWindow, string panelId) : base(parentWindow, panelId)
         {
-            _workflowEditor = new ONWorkflowEnvironment(parentWindow);
+            _environment = new ONWorkflowEnvironment(parentWindow, null);
         }
 
         public override void Update()
         {
-            _workflowEditor.Update();
-            _parentWindow.Repaint();
+            if (_environment != null)
+            {
+                _environment.Update();
+                _parentWindow.Repaint();
+            }
+        }
+
+        public void SetWorkflow(ONWorkflow workflow)
+        {
+            if (_environment != null)
+            {
+                _environment.DestroyEditors();
+                _environment = null;
+            }
+
+            _environment = new ONWorkflowEnvironment(ParentWindow, workflow);
+        }
+
+        public ONWorkflow GetWorkflow()
+        {
+            if (_environment != null)
+            {
+                return _environment.Workflow;
+            }
+
+            return null;
         }
 
         #endregion
@@ -78,10 +91,8 @@ namespace extOpenNodes.Editor.Panels
             var addNode = GUILayout.Button(_addNodeContent, EditorStyles.toolbarDropDown);
             if (addNode)
             {
-                var menuRect = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0);
-
-                if (_workflowEditor != null)
-                    _workflowEditor.ShowSpawnMenu(menuRect);
+                if (_environment != null)
+                    _environment.ShowSpawnMenu(false);
             }
 
             GUILayout.Space(5f);
@@ -95,16 +106,16 @@ namespace extOpenNodes.Editor.Panels
 
             GUILayout.FlexibleSpace();
 
-            var workflow = _workflowEditor.Workflow;
+            var workflow = _environment.Workflow;
             if (workflow != null)
             {
-                GUI.enabled = _workflowEditor.SelectedNodeContainer != null;
+                GUI.enabled = _environment.SelectedNodeContainer != null;
                 GUI.color = Color.red;
 
                 var removeNode = GUILayout.Button(_removeNodeContent, EditorStyles.toolbarButton);
                 if (removeNode)
                 {
-                    _workflowEditor.RemoveNodeContainer(_workflowEditor.SelectedNodeContainer);
+                    _environment.RemoveNodeContainer(_environment.SelectedNodeContainer);
                 }
 
                 GUI.color = defaultColor;
@@ -128,7 +139,7 @@ namespace extOpenNodes.Editor.Panels
 
             GUI.color = defaultColor;
 
-            _workflowEditor.Draw(contentRect);
+            _environment.Draw(contentRect);
         }
 
         #endregion
@@ -138,21 +149,21 @@ namespace extOpenNodes.Editor.Panels
         private IEnumerator ResetPositionCoroutine()
         {
             var velocity = Vector2.zero;
-            var distance = Vector2.Distance(_workflowEditor.PositionOffset, Vector2.zero);
+            var distance = Vector2.Distance(_environment.Position, Vector2.zero);
             var startTime = EditorApplication.timeSinceStartup;
 
             while (distance > 0.01f)
             {
                 var timeDelta = (float)(EditorApplication.timeSinceStartup - startTime);
 
-                _workflowEditor.PositionOffset = Vector2.SmoothDamp(_workflowEditor.PositionOffset, Vector2.zero, ref velocity, 0.2f, 100, timeDelta);
+                _environment.Position = Vector2.SmoothDamp(_environment.Position, Vector2.zero, ref velocity, 0.2f, 100, timeDelta);
 
-                distance = Vector2.Distance(_workflowEditor.PositionOffset, Vector2.zero);
+                distance = Vector2.Distance(_environment.Position, Vector2.zero);
 
                 yield return null;
             }
 
-            _workflowEditor.PositionOffset = Vector2.zero;
+            _environment.Position = Vector2.zero;
         }
 
         #endregion

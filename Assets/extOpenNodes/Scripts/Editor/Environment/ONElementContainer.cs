@@ -4,9 +4,8 @@ using UnityEngine;
 
 using extOpenNodes.Core;
 
-namespace extOpenNodes.Editor.Environment
+namespace extOpenNodes.Editor.Environments
 {
-    //TODO: Replace.
     public class ONElementContainer
     {
         #region Public Vars
@@ -31,7 +30,7 @@ namespace extOpenNodes.Editor.Environment
                     return LocalPosition + Parent.Position;
                 }
 
-                return LocalPosition + Environment.PositionOffset;
+                return LocalPosition + Environment.Position;
             }
             set
             {
@@ -41,7 +40,7 @@ namespace extOpenNodes.Editor.Environment
                 }
                 else
                 {
-                    LocalPosition = value - Environment.PositionOffset;
+                    LocalPosition = value - Environment.Position;
                 }
             }
         }
@@ -70,10 +69,6 @@ namespace extOpenNodes.Editor.Environment
             }
         }
 
-
-        #endregion
-
-        #region Protected Vars
 
         #endregion
 
@@ -109,11 +104,6 @@ namespace extOpenNodes.Editor.Environment
     {
         #region Public Vars
 
-        public T Element
-        {
-            get { return element; }
-        }
-
         public override Vector2 LocalPosition
         {
             get { return element.ViewerPosition; }
@@ -134,24 +124,12 @@ namespace extOpenNodes.Editor.Environment
 
         #endregion
 
-        #region Private Vars
-
-        #endregion
-
         #region Public Methods
 
         public ONElementContainer(T element, ONWorkflowEnvironment workflowEditor) : base(workflowEditor)
         {
             this.element = element;
         }
-
-        #endregion
-
-        #region Protected Methods
-
-        #endregion
-
-        #region Private Methods
 
         #endregion
     }

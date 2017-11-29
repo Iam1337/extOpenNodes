@@ -6,15 +6,16 @@ using UnityEngine.Experimental.UIElements;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 using extOpenNodes.Core;
 
 using extOpenNodes.Editor.Windows;
 
-namespace extOpenNodes.Editor.Environment
+namespace extOpenNodes.Editor.Environments
 {
+    //TODO: Rewrite?
     public class ONWorkflowEnvironment
     {
         #region Extensions
@@ -26,13 +27,6 @@ namespace extOpenNodes.Editor.Environment
             public Vector2 MouseOffset;
         }
 
-        private class Tooltip
-        {
-            public GUIContent Content;
-
-            public Rect Rect;
-        }
-
         #endregion
 
         #region Public Vars
@@ -40,24 +34,24 @@ namespace extOpenNodes.Editor.Environment
         public ONWorkflow Workflow
         {
             get { return _workflow; }
-            set
-            {
-                _workflow = value;
-
-                if (_workflow != null)
-                    _workflow.Register();
-
-                _selectedNodeContainer = null;
-                _dragTask = null;
-
-                InitWorkflow();
-            }
         }
 
-        public Vector2 PositionOffset
+        public Vector2 Position
         {
-            get { return _positionOffset; }
-            set { _positionOffset = value; }
+            get
+            {
+                if (_workflow != null)
+                    return _workflow.EnvironmentPosition;
+
+                return _decoratePosition;
+            }
+            set
+            {
+                if (_workflow != null)
+                    _workflow.EnvironmentPosition = value;
+
+                _decoratePosition = value;
+            }
         }
 
         public Vector2 Size
@@ -73,7 +67,7 @@ namespace extOpenNodes.Editor.Environment
 
         public ONNodeContainer SelectedNodeContainer
         {
-            get 
+            get
             {
                 if (_dragTask != null)
                     return _dragTask.NodeVisual;
@@ -101,7 +95,7 @@ namespace extOpenNodes.Editor.Environment
 
         #region Private Vars
 
-        private readonly Dictionary<ONNode, ONNodeContainer> _containersDictionary = new Dictionary<ONNode, ONNodeContainer>();
+        private readonly List<ONNodeContainer> _containers = new List<ONNodeContainer>();
 
         private readonly Color _redColor = new Color(0.8f, 0, 0, 1);
 
@@ -111,29 +105,45 @@ namespace extOpenNodes.Editor.Environment
 
         private ONNodeContainer _selectedNodeContainer;
 
-        private readonly ONWindow _parentWindow;
+        private ONWindow _parentWindow;
 
-        private Vector2 _positionOffset;
+        private Vector2 _decoratePosition;
 
         private ONWorkflow _workflow;
-
-        private Vector2 _clickOffset;
 
         private Vector2 _viewerSize;
 
         private DragTask _dragTask;
 
-        private Tooltip _tooltip;
+        private string _tooltip;
 
         #endregion
 
         #region Public Methods
 
-        public ONWorkflowEnvironment(ONWindow parentWindow)
+        public ONWorkflowEnvironment(ONWindow parentWindow, ONWorkflow workflow)
         {
             _parentWindow = parentWindow;
+            _workflow = workflow;
 
-            ONNodesDictionary.LoadLibrary();
+            if (_workflow != null)
+            {
+                _workflow.Register();
+
+                var nodes = _workflow.GetNodes();
+                foreach (var node in nodes)
+                {
+                    _containers.Add(new ONNodeContainer(node, this));
+                }
+            }
+        }
+
+        public void DestroyEditors()
+        {
+            foreach (var container in _containers)
+            {
+                container.DestroyEditor();
+            }
         }
 
         public void Update()
@@ -156,7 +166,7 @@ namespace extOpenNodes.Editor.Environment
 
             GUI.Box(localPosition, GUIContent.none, ONEditorStyles.ViewBackground);
 
-            ONEditorLayout.DrawGrid(localPosition, _positionOffset);
+            ONEditorLayout.Grid(localPosition, Position);
 
             _parentWindow.BeginWindows();
 
@@ -173,23 +183,7 @@ namespace extOpenNodes.Editor.Environment
 
             GUI.EndGroup();
 
-            if (_tooltip != null)
-            {
-                var rect = _tooltip.Rect;
-                rect.position += viewerRect.position;
-
-                GUI.Box(rect, _tooltip.Content);
-
-                _tooltip = null;
-            }
-        }
-
-        public void DestroyInspectors()
-        {
-            foreach (var nodeVisual in _containersDictionary.Values)
-            {
-                nodeVisual.DestroyEditor();
-            }
+            DrawTooltip();
         }
 
         public void DragNodeContainer(ONNodeContainer nodeVisual)
@@ -200,56 +194,94 @@ namespace extOpenNodes.Editor.Environment
             _selectedNodeContainer = null;
             _dragTask = new DragTask();
 
-            var mousePosition = GetViewMousePosition();
+            var mousePosition = GetEnvironmentMousePosition();
             var nodePosition = nodeVisual.Position;
 
             _dragTask.NodeVisual = nodeVisual;
             _dragTask.MouseOffset = mousePosition - nodePosition;
         }
 
-        public void DrawTooltip(GUIContent content, Rect tooltipRect)
+        public void DrawTooltip(string tooltip)
         {
-            _tooltip = new Tooltip();
-            _tooltip.Content = content;
-            _tooltip.Rect = tooltipRect;
+            _tooltip = tooltip;
         }
 
         public void CreateNodeContainer(ONNode node)
         {
-            if (_containersDictionary.ContainsKey(node))
+            if (_containers.FirstOrDefault(c => c.Node == node) != null)
                 return;
 
             var nodeVisual = new ONNodeContainer(node, this);
             nodeVisual.Focus();
 
             _selectedNodeContainer = nodeVisual;
-            _containersDictionary.Add(node, nodeVisual);
+            _containers.Add(nodeVisual);
         }
 
-        public void RemoveNodeContainer(ONNodeContainer nodeVisual)
+        public void RemoveNodeContainer(ONNodeContainer nodeConteiner)
         {
-            if (_workflow == null && !_containersDictionary.ContainsValue(nodeVisual))
+            if (!_containers.Contains(nodeConteiner))
                 return;
 
-            if (_selectedNodeContainer == nodeVisual)
+            if (_selectedNodeContainer == nodeConteiner)
                 _selectedNodeContainer = null;
 
-            nodeVisual.DestroyEditor();
+            nodeConteiner.DestroyEditor();
             ONEditorUtils.ClearGlobalCache();
 
-            var node = nodeVisual.Element;
+            var node = nodeConteiner.Node;
 
-            _containersDictionary.Remove(node);
+            _containers.Remove(nodeConteiner);
 
             ONWorkflowUtils.RemoveNode(_workflow, node);
         }
 
-        public void ShowSpawnMenu(Rect menuRect)
+        public void ShowSpawnMenu(bool underMouse)
         {
-            var popupItems = ONNodesDictionary.Dictionary.Keys.ToArray();
-            var spawnPosition = -PositionOffset + Size / 2f;
+            var menuRect = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0);
+            var nodesContent = new List<GUIContent>();
+            var spawnPosition = Vector2.zero;
 
-            EditorUtility.DisplayCustomMenu(menuRect, popupItems, -1, MenuCreateNode, spawnPosition);
+            if (!underMouse)
+            {
+                spawnPosition = -Position + Size / 2f;
+            }
+            else
+            {
+                spawnPosition = GetEnvironmentMousePosition();
+            }
+
+            foreach (var nodeData in ONNodesUtils.NodesDatas)
+            {
+                nodesContent.Add(nodeData.Content);
+            }
+
+            var popupItems = nodesContent.ToArray();
+
+            EditorUtility.DisplayCustomMenu(menuRect, popupItems, -1, NodeSpawnMenuCallback, spawnPosition);
+        }
+
+        public void ShowNodeMenu(ONNode node)
+        {
+            var menuRect = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0);
+            var nodesContent = new List<GUIContent>();
+
+            var component = node.Target;
+            var componentType = component.GetType();
+
+            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+            var selectIndex = -1;
+
+            nodesContent.Add(new GUIContent("Create Schema"));
+
+            foreach (var schema in schemes)
+            {
+                nodesContent.Add(new GUIContent("Change Schema/" + schema.Name));
+            }
+
+            var popupItems = nodesContent.ToArray();
+
+            EditorUtility.DisplayCustomMenu(menuRect, popupItems, selectIndex, NodeMenuCallback, node);
         }
 
         public void SaveWorkflow()
@@ -262,9 +294,18 @@ namespace extOpenNodes.Editor.Environment
             AssetDatabase.SaveAssets();
         }
 
-        #endregion
+        public void RebuildContainer(ONNode node)
+        {
+            if (_workflow == null)
+                return;
 
-        #region Protected Methods
+            var container = _containers.FirstOrDefault(c => c.Node == node);
+            if (container != null)
+            {
+                _containers.Remove(container);
+                _containers.Add(new ONNodeContainer(node, this));
+            }
+        }
 
         #endregion
 
@@ -273,11 +314,18 @@ namespace extOpenNodes.Editor.Environment
         // DRAW METHODS
         private void DrawWorkflow(ONWorkflow workflow)
         {
-            var nodeVisuals = new ONNodeContainer[_containersDictionary.Count];
-            _containersDictionary.Values.CopyTo(nodeVisuals, 0);
+            var nodeVisuals = new ONNodeContainer[_containers.Count];
+            _containers.CopyTo(nodeVisuals, 0);
 
             for (var index = 0; index < nodeVisuals.Length; index++)
             {
+                if (nodeVisuals[index].Node == null || 
+                    nodeVisuals[index].Node.Target == null)
+                {
+                    RemoveNodeContainer(nodeVisuals[index]);
+                    continue;
+                }
+
                 nodeVisuals[index].NodeIndex = index;
                 nodeVisuals[index].Draw();
             }
@@ -295,11 +343,11 @@ namespace extOpenNodes.Editor.Environment
                     var color = _redColor;
                     var propertyPosition = _selectedPropertyContainer.Rect.center;
 
-                    if (_selectedPropertyContainer.Element.PropertyType == ONPropertyType.Input)
+                    if (_selectedPropertyContainer.Property.PropertyType == ONPropertyType.Input)
                     {
                         DrawLink(Event.current.mousePosition, propertyPosition, color);
                     }
-                    else if (_selectedPropertyContainer.Element.PropertyType == ONPropertyType.Output)
+                    else if (_selectedPropertyContainer.Property.PropertyType == ONPropertyType.Output)
                     {
                         DrawLink(propertyPosition, Event.current.mousePosition, color);
                     }
@@ -313,17 +361,40 @@ namespace extOpenNodes.Editor.Environment
 
             if (_focusedPropertyContainer != null)
             {
-                if (link.SourceProperty == _focusedPropertyContainer.Element || link.TargetProperty == _focusedPropertyContainer.Element)
+                if (link.SourceProperty == _focusedPropertyContainer.Property ||
+                    link.TargetProperty == _focusedPropertyContainer.Property)
                 {
                     color = _redColor;
                 }
             }
 
             //Oh, shi~
-            var sourcePosition = link.SourceProperty.Node.ViewerPosition + link.SourceProperty.ViewerPosition + _positionOffset + link.SourceProperty.ViewerSize / 2f;
-            var targetPosition = link.TargetProperty.Node.ViewerPosition + link.TargetProperty.ViewerPosition + _positionOffset + link.TargetProperty.ViewerSize / 2f;
+            var sourcePosition = link.SourceProperty.Node.ViewerPosition + link.SourceProperty.ViewerPosition + Position + link.SourceProperty.ViewerSize / 2f;
+            var targetPosition = link.TargetProperty.Node.ViewerPosition + link.TargetProperty.ViewerPosition + Position + link.TargetProperty.ViewerSize / 2f;
 
             DrawLink(sourcePosition, targetPosition, color);
+        }
+
+        private void DrawTooltip()
+        {
+            if (string.IsNullOrEmpty(_tooltip))
+                return;
+
+            var tooltipContent = new GUIContent(_tooltip);
+
+            var position = Event.current.mousePosition;
+            position.x += 15;
+
+            var size = ONEditorStyles.CenterLabel.CalcSize(tooltipContent);
+            size.y += 2;
+            size.x += EditorGUIUtility.standardVerticalSpacing * 4f;
+
+            var rect = new Rect(position, size);
+
+            GUI.Box(rect, GUIContent.none);
+            GUI.Box(rect, tooltipContent, ONEditorStyles.CenterLabel);
+
+            _tooltip = string.Empty;
         }
 
         // PROCESS EVENTS
@@ -337,7 +408,7 @@ namespace extOpenNodes.Editor.Environment
                 }
                 if (Event.current.type == EventType.DragPerform)
                 {
-                    var spawnPosition = GetViewMousePosition();
+                    var spawnPosition = GetEnvironmentMousePosition();
 
                     foreach (var draggedObject in DragAndDrop.objectReferences)
                     {
@@ -383,9 +454,10 @@ namespace extOpenNodes.Editor.Environment
                 }
 
                 // VIEW MOVE
-                if (Event.current.type == EventType.MouseDrag && Event.current.button == (int)MouseButton.RightMouse)
+                if (Event.current.type == EventType.MouseDrag &&
+                    Event.current.button == (int)MouseButton.RightMouse)
                 {
-                    _positionOffset += Event.current.delta;
+                    Position += Event.current.delta;
 
                     Event.current.Use();
                 }
@@ -397,16 +469,18 @@ namespace extOpenNodes.Editor.Environment
             if (_dragTask != null)
             {
                 // NODE MOVE
-                if (Event.current.type == EventType.MouseDrag && Event.current.button == (int)MouseButton.LeftMouse)
+                if (Event.current.type == EventType.MouseDrag && 
+                    Event.current.button == (int)MouseButton.LeftMouse)
                 {
-                    var mousePosition = GetViewMousePosition();
+                    var mousePosition = GetEnvironmentMousePosition();
 
                     _dragTask.NodeVisual.Position = mousePosition - _dragTask.MouseOffset;
 
                     Event.current.Use();
                 }
 
-                if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.LeftMouse)
+                if (Event.current.type == EventType.MouseUp &&
+                    Event.current.button == (int)MouseButton.LeftMouse)
                 {
                     _selectedNodeContainer = _dragTask.NodeVisual;
                     _dragTask = null;
@@ -420,7 +494,8 @@ namespace extOpenNodes.Editor.Environment
 
             if (_selectedNodeContainer != null)
             {
-                if (Event.current.type == EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace)
+                if (Event.current.type == EventType.KeyDown &&
+                    Event.current.keyCode == KeyCode.Backspace)
                 {
                     RemoveNodeContainer(_selectedNodeContainer);
                     Event.current.Use();
@@ -435,46 +510,23 @@ namespace extOpenNodes.Editor.Environment
 
             if (_selectedPropertyContainer != null)
             {
-                if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.LeftMouse)
+                if (Event.current.type == EventType.MouseUp &&
+                    Event.current.button == (int)MouseButton.LeftMouse)
                 {
                     _selectedPropertyContainer = null;
                 }
             }
 
-            if (Event.current.type == EventType.MouseDown && Event.current.button == (int)MouseButton.RightMouse)
+            if (Event.current.type == EventType.MouseDown &&
+                Event.current.clickCount == 2 &&
+                Event.current.button == (int)MouseButton.RightMouse)
             {
-                _clickOffset = _positionOffset;
-            }
-
-            if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.RightMouse)
-            {
-                if (Vector2.Distance(_clickOffset, _positionOffset) < 0.1f && Event.current.clickCount == 1)
-                {
-                    var popupItems = ONNodesDictionary.Dictionary.Keys.ToArray();
-                    var spawnPosition = GetViewMousePosition();
-
-                    var menuRect = new Rect(Event.current.mousePosition.x, Event.current.mousePosition.y, 0, 0);
-
-                    EditorUtility.DisplayCustomMenu(menuRect, popupItems, -1, MenuCreateNode, spawnPosition);
-                }
+                    ShowSpawnMenu(true);
+                Event.current.Use();
             }
         }
 
         //HELP METHODS
-        private void DrawLink(ONPropertyContainer propertyVisual, Vector2 position, Color linkColor)
-        {
-            var propertyPosition = propertyVisual.Rect.center;
-
-            if (propertyVisual.Element.PropertyType == ONPropertyType.Input)
-            {
-                DrawLink(position, propertyPosition, linkColor);
-            }
-            else if (propertyVisual.Element.PropertyType == ONPropertyType.Output)
-            {
-                DrawLink(propertyPosition, position, linkColor);
-            }
-        }
-
         private void DrawLink(Vector2 firstPosition, Vector2 secondPosition, Color linkColor)
         {
             var distance = Vector2.Distance(firstPosition, secondPosition);
@@ -504,43 +556,49 @@ namespace extOpenNodes.Editor.Environment
             GUI.color = defaultColor;
         }
 
-        private Vector2 GetViewMousePosition()
+        private Vector2 GetEnvironmentMousePosition()
         {
-            var mousePosition = Event.current.mousePosition;
-            return mousePosition - _positionOffset;
+            return Event.current.mousePosition - Position;
         }
 
-        private void InitWorkflow()
+        private void NodeSpawnMenuCallback(object userData, string[] options, int select)
         {
-            DestroyInspectors();
+            var nodeData = ONNodesUtils.NodesDatas[select];
 
-            _containersDictionary.Clear();
-
-            if (_workflow == null)
-                return;
-
-            var nodes = _workflow.GetNodes();
-            foreach (var node in nodes)
-            {
-                _containersDictionary.Add(node, new ONNodeContainer(node, this));
-            }
-        }
-
-        private void MenuCreateNode(object userData, string[] options, int select)
-        {
-            var type = ONNodesDictionary.GetType(options[select]);
-            if (type == null) return;
+            var componentType = nodeData.ComponentType;
+            if (componentType == null) return;
 
             if (_workflow == null)
             {
                 ONWorkflowUtils.CreateWorkflow(true);
             }
 
-            var node = ONWorkflowUtils.CreateNode(_workflow, type);
+            var node = ONWorkflowUtils.CreateNode(_workflow, componentType);
             node.ViewerPosition = (Vector2)userData;
 
             CreateNodeContainer(node);
             SaveWorkflow();
+        }
+
+        private void NodeMenuCallback(object userData, string[] options, int select)
+        {
+            var node = (ONNode)userData;
+            var component = node.Target;
+            var componentType = component.GetType();
+
+            if (select == 0)
+            {
+                ONNodesUtils.CreateSchema(componentType);
+            }
+            else
+            {
+                var index = select - 1;
+                var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+
+                ONNodesUtils.RebuildNode(_workflow, node, schemes[index]);
+
+                RebuildContainer(node);
+            }
         }
 
         #endregion

@@ -4,13 +4,20 @@ using UnityEngine;
 
 using UnityEditor;
 
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
 using extOpenNodes.Core;
+using System.Reflection;
 
 namespace extOpenNodes.Editor
 {
     public static class ONEditorLayout
     {
         #region Static Private Vars
+
+        private static readonly GUIContent _noneContent = new GUIContent("- None - ");
 
         private static readonly GUIContent _inputsContent = new GUIContent("Inputs:");
 
@@ -20,7 +27,27 @@ namespace extOpenNodes.Editor
 
         #region Static Public Methods
 
-        public static void DrawGrid(Rect container, Vector2 offset)
+        public static void Logo()
+        {
+            if (ONEditorTextures.IronWall != null)
+            {
+                EditorGUILayout.Space();
+
+                var rect = GUILayoutUtility.GetRect(0, 0);
+                var width = ONEditorTextures.IronWall.width * 0.2f;
+                var height = ONEditorTextures.IronWall.height * 0.2f;
+
+                rect.x = rect.width * 0.5f - width * 0.5f;
+                rect.y = rect.y + rect.height * 0.5f - height * 0.5f;
+                rect.width = width;
+                rect.height = height;
+
+                GUI.DrawTexture(rect, ONEditorTextures.IronWall);
+                EditorGUILayout.Space();
+            }
+        }
+
+        public static void Grid(Rect container, Vector2 offset)
         {
             var baseOffset = offset;
 
@@ -95,49 +122,97 @@ namespace extOpenNodes.Editor
         public static void DrawIOHeader(ONNode node)
         {
             EditorGUILayout.BeginHorizontal();
-            DrawInputs(node);
+            DrawProperties(node.InputProperties, _inputsContent, ONEditorStyles.InputProperty);
             GUILayout.FlexibleSpace();
-            DrawOutputs(node);
+            DrawProperties(node.OutputProperties, _outputsContent, ONEditorStyles.OutputProperty);
             EditorGUILayout.EndHorizontal();
         }
 
-        public static void DrawInputs(ONNode node)
+        public static ONNodeSchema SchemesPopup(Type componentType, ONNodeSchema schema, GUIContent content)
         {
-            var inputProperties = node.InputProperties;
+            var schemes = ONNodesUtils.GetNodeSchemes(componentType);
+            var popupContent = new List<GUIContent>();
+            var currentIndex = 0;
 
-            EditorGUILayout.BeginVertical();
-            GUILayout.Label(_inputsContent, ONEditorStyles.CenterBoldLabel);
-
-            if (inputProperties.Count == 0)
+            if (schemes.Length > 0)
             {
-                GUILayout.Label("- None -", ONEditorStyles.InputProperty);
+                for (var i = 0; i < schemes.Length; i++)
+                {
+                    if (schema == schemes[i])
+                    {
+                        currentIndex = i;
+                    }
+
+                    popupContent.Add(new GUIContent(schemes[i].Name));
+                }
             }
-            foreach (var property in inputProperties)
+            else
             {
-                GUILayout.Label(property.Name, ONEditorStyles.InputProperty);
+                popupContent.Add(_noneContent);
             }
 
-            EditorGUILayout.EndVertical();
+            currentIndex = EditorGUILayout.Popup(content, currentIndex, popupContent.ToArray());
+
+            return schemes.Length == 0 ? null : schemes[currentIndex];
         }
 
-        public static void DrawOutputs(ONNode node)
+        public static string InputMembersPopup(Rect rect, Type targetType, string memberName, GUIContent content)
         {
-            var outputProperties = node.OutputProperties;
+            return MembersPopup(rect, memberName, ONEditorUtils.GetInputMembersInfos(targetType), content);
+        }
 
-            EditorGUILayout.BeginVertical();
-            GUILayout.Label(_outputsContent, ONEditorStyles.CenterBoldLabel);
+        public static string OutputMembersPopup(Rect rect, Type targetType, string memberName, GUIContent content)
+        {
+            return MembersPopup(rect, memberName, ONEditorUtils.GetOutputMembersInfos(targetType), content);
+        }
+        
+        #endregion
 
-            if (outputProperties.Count == 0)
+        #region Static Private Methods
+
+        private static string MembersPopup(Rect rect, string memberName, List<MemberInfo> membersInfos, GUIContent content)
+        {
+            var popupContent = new List<GUIContent>();
+            var currentIndex = 0;
+
+            if (membersInfos.Count > 0)
             {
-                GUILayout.Label("- None -", ONEditorStyles.OutputProperty);
+                for (var i = 0; i < membersInfos.Count; i++)
+                {
+                    if (membersInfos[i].Name == memberName)
+                    {
+                        currentIndex = i;
+                    }
+
+                    popupContent.Add(new GUIContent(ONEditorUtils.MemberFrendlyName(membersInfos[i])));
+                }
             }
-            foreach (var property in outputProperties)
+            else
             {
-                GUILayout.Label(property.Name, ONEditorStyles.OutputProperty);
+                popupContent.Add(_noneContent);
+            }
+
+            currentIndex = EditorGUI.Popup(rect, content, currentIndex, popupContent.ToArray());
+
+            return membersInfos.Count == 0 ? "-none-" : membersInfos[currentIndex].Name;
+        }
+
+
+        private static void DrawProperties(List<ONProperty> properties, GUIContent title, GUIStyle style)
+        {
+            EditorGUILayout.BeginVertical();
+            GUILayout.Label(title, ONEditorStyles.CenterBoldLabel);
+
+            if (properties.Count == 0)
+            {
+                GUILayout.Label("- None -", style);
+            }
+            foreach (var property in properties)
+            {
+                GUILayout.Label(property.Name, style);
             }
 
             EditorGUILayout.EndVertical();
-
         }
 
         #endregion

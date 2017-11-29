@@ -25,7 +25,7 @@ namespace extOpenNodes
 
         public GameObject NodesRoot
         {
-            get 
+            get
             {
                 if (_nodesRoot == null)
                 {
@@ -38,9 +38,14 @@ namespace extOpenNodes
             }
         }
 
-        #endregion
-
-        #region Protected Vars
+#if UNITY_EDITOR
+        // EDITOR ONLY
+        public Vector2 EnvironmentPosition
+        {
+            get { return _enviromentPositon; }
+            set { _enviromentPositon = value;}
+        }
+#endif
 
         #endregion
 
@@ -53,6 +58,12 @@ namespace extOpenNodes
 
         [SerializeField]
         private List<ONLink> _links = new List<ONLink>();
+
+#if UNITY_EDITOR
+        // EDITOR ONLY
+        [SerializeField]
+        private Vector2 _enviromentPositon;
+#endif
 
         [SerializeField]
         private GameObject _nodesRoot;
