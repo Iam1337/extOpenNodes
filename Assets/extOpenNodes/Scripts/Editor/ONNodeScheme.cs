@@ -4,6 +4,7 @@ using UnityEngine;
 
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 
 namespace extOpenNodes.Editor
 {
@@ -47,7 +48,7 @@ namespace extOpenNodes.Editor
             get
             {
                 if (_type == null)
-                    _type = Type.GetType(typeName);
+					_type = Type.GetType(typeName, false);
 
                 return _type;
             }
@@ -57,6 +58,8 @@ namespace extOpenNodes.Editor
                 typeName = _type.AssemblyQualifiedName;
             }
         }
+
+		public MonoScript Mono;
 
         #endregion
 

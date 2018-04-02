@@ -97,6 +97,11 @@ namespace extOpenNodes.Core
             if (!_connected)
                 return;
 
+			if (TargetProperty != null && _linkType == ONLinkType.Value)
+			{
+				TargetProperty.SetValue(null);
+			}
+
             _connected = false;
         }
 

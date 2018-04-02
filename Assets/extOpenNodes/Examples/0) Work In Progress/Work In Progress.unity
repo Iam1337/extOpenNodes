@@ -135,7 +135,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a665b971cbc15448cb9e0ea82052bb9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _nodes: []
+  _nodes:
+  - viewerRect:
+      serializedVersion: 2
+      x: 21
+      y: 100
+      width: 170
+      height: 80
+    _elementId: a74de1ed2f054012b73bc696440ddd54
+    _name: Transform
+    _inputProperties:
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 39
+        width: 16
+        height: 16
+      _elementId: c0d0a5ef8ab9423e9b710d747d44b5a9
+      _name: Local Position
+      _index: 0
+      _nodeId: a74de1ed2f054012b73bc696440ddd54
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localPosition
+    _outputProperties:
+    - viewerRect:
+        serializedVersion: 2
+        x: 172
+        y: 39
+        width: 16
+        height: 16
+      _elementId: f8cae8fbee4f4bc6936b407648d637e7
+      _name: Local Position
+      _index: 0
+      _nodeId: a74de1ed2f054012b73bc696440ddd54
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localPosition
+    _target: {fileID: 1006019820}
+    _customInspector: 0
+    _hideInspector: 1
+  - viewerRect:
+      serializedVersion: 2
+      x: 268
+      y: 154
+      width: 150
+      height: 80
+    _elementId: b7a4d5a2027a430da2bd1d0d47deb44c
+    _name: Component
+    _inputProperties: []
+    _outputProperties: []
+    _target: {fileID: 1378302601}
+    _customInspector: 0
+    _hideInspector: 1
   _links: []
   _enviromentPositon: {x: 38, y: 21}
   _nodesRoot: {fileID: 1012412286}
@@ -426,7 +482,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1006019816}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.55, z: 0}
+  m_LocalPosition: {x: 1.64, y: 0.78, z: -1.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1403082430}
@@ -536,7 +592,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1378302597}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06, y: 2.55, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 968503093}

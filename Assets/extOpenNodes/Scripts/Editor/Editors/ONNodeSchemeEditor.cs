@@ -26,6 +26,10 @@ namespace extOpenNodes.Editor.Editors
 
         private static readonly GUIContent _outputPropertySchemesContent = new GUIContent("Output Properties Schemes:");
 
+		private static readonly GUIContent _settingsContent = new GUIContent("Settings:");
+
+		private static readonly GUIContent _componentScriptContent = new GUIContent("Component Script:");
+
         #endregion
 
         #region Public Vars
@@ -48,6 +52,8 @@ namespace extOpenNodes.Editor.Editors
 
         private SerializedProperty _outputPropertiesSchemesProperty;
 
+		private SerializedProperty _typeNameProperty;
+
         private ReorderableList _inputReordableList;
 
         private ReorderableList _outputReordableList;
@@ -64,6 +70,7 @@ namespace extOpenNodes.Editor.Editors
             _selfOutputProperty = serializedObject.FindProperty("selfOutput");
             _inputPropertiesSchemesProperty = serializedObject.FindProperty("inputPropertiesSchemes");
             _outputPropertiesSchemesProperty = serializedObject.FindProperty("outputPropertiesSchemes");
+			_typeNameProperty = serializedObject.FindProperty("typeName");
 
             _inputReordableList = new ReorderableList(serializedObject, _inputPropertiesSchemesProperty, true, true, true, true);
             _inputReordableList.elementHeight = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 3;
@@ -105,26 +112,22 @@ namespace extOpenNodes.Editor.Editors
             EditorGUILayout.PropertyField(_nameProperty, _nameContent);
             GUI.color = defaultColor;
 
-            // SELF OUTPUT NAME
-            EditorGUILayout.PropertyField(_selfOutputProperty, _selfOutputContent);
+			if (_target.TargetType != null)
+			{
+				// SELF OUTPUT NAME
+				EditorGUILayout.PropertyField(_selfOutputProperty, _selfOutputContent);
+			}
 
             GUILayout.EndVertical();
 
-            // INPUT PROPERTIES
-            GUILayout.Label(_inputPropertySchemesContent, EditorStyles.boldLabel);
-            GUILayout.BeginVertical("box");
-
-            _inputReordableList.DoLayoutList();
-
-            GUILayout.EndVertical();
-
-            // OUTPUT PROPERTIES
-            GUILayout.Label(_outputPropertySchemesContent, EditorStyles.boldLabel);
-            GUILayout.BeginVertical("box");
-
-            _outputReordableList.DoLayoutList();
-
-            GUILayout.EndVertical();
+			if (_target.TargetType != null)
+			{
+				DrawProperties();
+			}
+			else
+			{
+				DrawClassSettings();
+			}
 
             var change = EditorGUI.EndChangeCheck();
             if (change) serializedObject.ApplyModifiedProperties();
@@ -192,6 +195,47 @@ namespace extOpenNodes.Editor.Editors
 
             EditorGUI.PropertyField(rect, property.GetArrayElementAtIndex(index), GUIContent.none);
         }
+
+		private void DrawProperties()
+		{
+			// INPUT PROPERTIES
+			GUILayout.Label(_inputPropertySchemesContent, EditorStyles.boldLabel);
+			GUILayout.BeginVertical("box");
+
+			_inputReordableList.DoLayoutList();
+
+			GUILayout.EndVertical();
+
+			// OUTPUT PROPERTIES
+			GUILayout.Label(_outputPropertySchemesContent, EditorStyles.boldLabel);
+			GUILayout.BeginVertical("box");
+
+			_outputReordableList.DoLayoutList();
+
+			GUILayout.EndVertical();
+		}
+
+		private void DrawClassSettings()
+		{
+			// COMPONENT SCRIPT SETTINGS
+			GUILayout.Label(_settingsContent, EditorStyles.boldLabel);
+			GUILayout.BeginVertical("box");
+
+			var script = (MonoScript)EditorGUILayout.ObjectField(null, typeof(MonoScript), false);
+			if (script != null)
+			{
+				var scriptClass = script.GetClass();
+				if (scriptClass != null)
+				{
+					_target.TargetType = scriptClass;
+					_typeNameProperty.stringValue = scriptClass.AssemblyQualifiedName;
+
+					EditorUtility.SetDirty(target);
+				}
+			}
+
+			GUILayout.EndVertical();
+		}
 
         #endregion
     }

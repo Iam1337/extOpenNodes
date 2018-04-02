@@ -55,6 +55,9 @@ namespace extOpenNodes.Editor
 
         public static List<ONNodeScheme> GetSchemes(Type componentType)
         {
+			if (componentType == null)
+				return new List<ONNodeScheme>();
+			
             var schemes = GetSchemesInternal(componentType);
 
             if (componentType != null && _generatedSchemes.ContainsKey(componentType))
@@ -177,15 +180,17 @@ namespace extOpenNodes.Editor
 
             var guids = AssetDatabase.FindAssets("t:" + typeof(ONNodeScheme).Name);
 
-            foreach (var guid in guids)
-            {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+			foreach (var guid in guids)
+			{
+				var assetPath = AssetDatabase.GUIDToAssetPath(guid);
 
-                var scheme = AssetDatabase.LoadAssetAtPath<ONNodeScheme>(assetPath);
-                if (scheme == null || !componentType.IsEqualsOrSubclass(scheme.TargetType)) continue;
+				var scheme = AssetDatabase.LoadAssetAtPath<ONNodeScheme>(assetPath);
 
-                schemes.Add(scheme);
-            }
+				if (scheme == null || scheme.TargetType == null) continue;
+				if (!componentType.IsEqualsOrSubclass(scheme.TargetType)) continue;
+
+				schemes.Add(scheme);
+			}
 
             return schemes;
         }
