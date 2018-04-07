@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -13,172 +13,172 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor
 {
-    [InitializeOnLoad]
-    public static class ONNodesUtils
-    {
-        #region Extensions
+	[InitializeOnLoad]
+	public static class ONNodesUtils
+	{
+		#region Extensions
 
-        public class NodeData
-        {
-            public Type ComponentType;
+		public class NodeData
+		{
+			public Type ComponentType;
 
-            public GUIContent Content;
-        }
+			public GUIContent Content;
+		}
 
-        #endregion
+		#endregion
 
-        #region Static Public Vars
+		#region Static Public Vars
 
-        public static List<NodeData> NodesTypes
-        {
-            get { return _nodesTypes; }
-        }
+		public static List<NodeData> NodesTypes
+		{
+			get { return _nodesTypes; }
+		}
 
-        #endregion
+		#endregion
 
-        #region Static Private Vars
+		#region Static Private Vars
 
-        private static List<NodeData> _nodesTypes = new List<NodeData>();
+		private static List<NodeData> _nodesTypes = new List<NodeData>();
 
-        private static Dictionary<Type, ONNodeScheme> _generatedSchemes = new Dictionary<Type, ONNodeScheme>();
+		private static Dictionary<Type, ONNodeScheme> _generatedSchemes = new Dictionary<Type, ONNodeScheme>();
 
-        private static string _schemesPath = "Assets/extOpenNodes/Schemes";
+		private static string _schemesPath = "Assets/extOpenNodes/Schemes";
 
-        #endregion
+		#endregion
 
-        #region Static Public Methods
+		#region Static Public Methods
 
-        static ONNodesUtils()
-        {
-            ReloadNodes();
-        }
+		static ONNodesUtils()
+		{
+			ReloadNodes();
+		}
 
-        public static List<ONNodeScheme> GetSchemes(Type componentType)
-        {
+		public static List<ONNodeScheme> GetSchemes(Type componentType)
+		{
 			if (componentType == null)
 				return new List<ONNodeScheme>();
-			
-            var schemes = GetSchemesInternal(componentType);
 
-            if (componentType != null && _generatedSchemes.ContainsKey(componentType))
-            {
-                schemes.Insert(0, _generatedSchemes[componentType]);
-            }
+			var schemes = GetSchemesInternal(componentType);
 
-            return schemes;
-        }
+			if (componentType != null && _generatedSchemes.ContainsKey(componentType))
+			{
+				schemes.Insert(0, _generatedSchemes[componentType]);
+			}
 
-        public static ONNodeScheme CreateScheme(Type componentType)
-        {
-            if (!Directory.Exists(_schemesPath))
-            {
-                Directory.CreateDirectory(_schemesPath);
-                AssetDatabase.Refresh();
-            }
+			return schemes;
+		}
 
-            var scheme = ScriptableObject.CreateInstance<ONNodeScheme>();
-            scheme.Name = ONEditorUtils.TypeFriendlyName(componentType);
-            scheme.TargetType = componentType;
+		public static ONNodeScheme CreateScheme(Type componentType)
+		{
+			if (!Directory.Exists(_schemesPath))
+			{
+				Directory.CreateDirectory(_schemesPath);
+				AssetDatabase.Refresh();
+			}
 
-            var fileName = componentType.FullName + ".asset";
-            var assetPath = AssetDatabase.GenerateUniqueAssetPath(_schemesPath + "/" + fileName);
+			var scheme = ScriptableObject.CreateInstance<ONNodeScheme>();
+			scheme.Name = ONEditorUtils.TypeFriendlyName(componentType);
+			scheme.TargetType = componentType;
 
-            AssetDatabase.CreateAsset(scheme, assetPath);
-            AssetDatabase.Refresh();
+			var fileName = componentType.FullName + ".asset";
+			var assetPath = AssetDatabase.GenerateUniqueAssetPath(_schemesPath + "/" + fileName);
 
-            Selection.activeObject = scheme;
+			AssetDatabase.CreateAsset(scheme, assetPath);
+			AssetDatabase.Refresh();
 
-            EditorUtility.FocusProjectWindow();
+			Selection.activeObject = scheme;
 
-            return scheme;
-        }
+			EditorUtility.FocusProjectWindow();
 
-        public static void RebuildNode(ONWorkflow workflow, ONNode node, ONNodeScheme scheme)
-        {
-            var component = node.Target;
-            var componentType = component.GetType();
+			return scheme;
+		}
 
-            if (!componentType.IsEqualsOrSubclass(scheme.TargetType))
-            {
-                return;
-            }
+		public static void RebuildNode(ONWorkflow workflow, ONNode node, ONNodeScheme scheme)
+		{
+			var component = node.Target;
+			var componentType = component.GetType();
 
-            ONWorkflowUtils.RemoveLinks(workflow, node);
+			if (!componentType.IsEqualsOrSubclass(scheme.TargetType))
+			{
+				return;
+			}
 
-            var properties = workflow.GetNodeProperties(node);
-            foreach (var property in properties)
-            {
-                workflow.RemoveProperty(property);
-            }
+			ONWorkflowUtils.RemoveLinks(workflow, node);
 
-            node.Name = scheme.Name;
-            node.CustomInspector = scheme.CustomInspector;
+			var properties = workflow.GetNodeProperties(node);
+			foreach (var property in properties)
+			{
+				workflow.RemoveProperty(property);
+			}
 
-            if (scheme.SelfOutput)
-            {
-                var property = workflow.CreateProperty(node, ONPropertyType.Output);
-                property.Name = "Self";
-                property.TargetCast = true;
-                property.SortIndex = -1;
-            }
+			node.Name = scheme.Name;
+			node.CustomInspector = scheme.CustomInspector;
 
-            var propertiesSchemes = new List<ONPropertyScheme>();
-            propertiesSchemes.AddRange(scheme.InputPropertiesSchemes);
-            propertiesSchemes.AddRange(scheme.OutputPropertiesSchemes);
+			if (scheme.SelfOutput)
+			{
+				var property = workflow.CreateProperty(node, ONPropertyType.Output);
+				property.Name = "Self";
+				property.TargetCast = true;
+				property.SortIndex = -1;
+			}
 
-            foreach (var propertyScheme in propertiesSchemes)
-            {
-                var reflectionMember = new ONReflectionMember();
-                reflectionMember.Target = component;
-                reflectionMember.Member = propertyScheme.Member;
+			var propertiesSchemes = new List<ONPropertyScheme>();
+			propertiesSchemes.AddRange(scheme.InputPropertiesSchemes);
+			propertiesSchemes.AddRange(scheme.OutputPropertiesSchemes);
 
-                if (!reflectionMember.IsMethod())
-                {
-                    if ((propertyScheme.PropertyType == ONPropertyType.Input && !reflectionMember.CanWrite) ||
-                        (propertyScheme.PropertyType == ONPropertyType.Output && !reflectionMember.CanRead))
-                        continue;
-                }
+			foreach (var propertyScheme in propertiesSchemes)
+			{
+				var reflectionMember = new ONReflectionMember();
+				reflectionMember.Target = component;
+				reflectionMember.Member = propertyScheme.Member;
 
-                var property = workflow.CreateProperty(node, propertyScheme.PropertyType);
-                property.Name = propertyScheme.Name;
-                property.ReflectionMember = reflectionMember;
-                property.SortIndex = propertyScheme.SortIndex;
-            }
-        }
+				if (!reflectionMember.IsMethod())
+				{
+					if ((propertyScheme.PropertyType == ONPropertyType.Input && !reflectionMember.CanWrite) ||
+						(propertyScheme.PropertyType == ONPropertyType.Output && !reflectionMember.CanRead))
+						continue;
+				}
 
-        public static void ReloadNodes()
-        {
-            _nodesTypes.Clear();
+				var property = workflow.CreateProperty(node, propertyScheme.PropertyType);
+				property.Name = propertyScheme.Name;
+				property.ReflectionMember = reflectionMember;
+				property.SortIndex = propertyScheme.SortIndex;
+			}
+		}
 
-            var dictionary = new Dictionary<string, Type>();
-            var guids = AssetDatabase.FindAssets("t:" + typeof(MonoScript).Name);
+		public static void ReloadNodes()
+		{
+			_nodesTypes.Clear();
 
-            foreach (var guid in guids)
-            {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
+			var dictionary = new Dictionary<string, Type>();
+			var guids = AssetDatabase.FindAssets("t:" + typeof(MonoScript).Name);
 
-                var monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(assetPath);
-                if (monoScript == null) continue;
+			foreach (var guid in guids)
+			{
+				var assetPath = AssetDatabase.GUIDToAssetPath(guid);
 
-                var componentType = monoScript.GetClass();
-                if (componentType == null) continue;
+				var monoScript = AssetDatabase.LoadAssetAtPath<MonoScript>(assetPath);
+				if (monoScript == null) continue;
 
-                ProcessType(dictionary, componentType);
-            }
-        }
+				var componentType = monoScript.GetClass();
+				if (componentType == null) continue;
 
-        #endregion
+				ProcessType(dictionary, componentType);
+			}
+		}
 
-        #region Static Private Methods
+		#endregion
 
-        private static List<ONNodeScheme> GetSchemesInternal(Type componentType)
-        {
-            var schemes = new List<ONNodeScheme>();
+		#region Static Private Methods
 
-            if (!Directory.Exists(_schemesPath))
-                Directory.CreateDirectory(_schemesPath);
+		private static List<ONNodeScheme> GetSchemesInternal(Type componentType)
+		{
+			var schemes = new List<ONNodeScheme>();
 
-            var guids = AssetDatabase.FindAssets("t:" + typeof(ONNodeScheme).Name);
+			if (!Directory.Exists(_schemesPath))
+				Directory.CreateDirectory(_schemesPath);
+
+			var guids = AssetDatabase.FindAssets("t:" + typeof(ONNodeScheme).Name);
 
 			foreach (var guid in guids)
 			{
@@ -192,94 +192,94 @@ namespace extOpenNodes.Editor
 				schemes.Add(scheme);
 			}
 
-            return schemes;
-        }
+			return schemes;
+		}
 
-        private static void ProcessType(Dictionary<string, Type> dictionary, Type componentType)
-        {
-            if (componentType.IsAbstract) return;
+		private static void ProcessType(Dictionary<string, Type> dictionary, Type componentType)
+		{
+			if (componentType.IsAbstract) return;
 
-            var nodeAttribute = ONUtilities.GetAttribute<ONNodeAttribute>(componentType, false);
-            if (nodeAttribute == null) return;
+			var nodeAttribute = ONUtilities.GetAttribute<ONNodeAttribute>(componentType, false);
+			if (nodeAttribute == null) return;
 
-            var name = nodeAttribute.Name;
-            if (name.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
-            {
-                name = name.Remove(name.Length - 1);
-            }
+			var name = nodeAttribute.Name;
+			if (name.EndsWith("/", StringComparison.InvariantCultureIgnoreCase))
+			{
+				name = name.Remove(name.Length - 1);
+			}
 
-            if (dictionary.ContainsKey(name))
-                return;
+			if (dictionary.ContainsKey(name))
+				return;
 
-            dictionary.Add(name, componentType);
+			dictionary.Add(name, componentType);
 
-            var nodeData = new NodeData();
-            nodeData.ComponentType = componentType;
-            nodeData.Content = new GUIContent(name);
+			var nodeData = new NodeData();
+			nodeData.ComponentType = componentType;
+			nodeData.Content = new GUIContent(name);
 
-            _generatedSchemes.Add(componentType, GenerateScheme(componentType));
-            _nodesTypes.Add(nodeData);
-        }
+			_generatedSchemes.Add(componentType, GenerateScheme(componentType));
+			_nodesTypes.Add(nodeData);
+		}
 
-        private static ONNodeScheme GenerateScheme(Type componentType)
-        {
-            var scheme = ScriptableObject.CreateInstance<ONNodeScheme>();
-            scheme.TargetType = componentType;
+		private static ONNodeScheme GenerateScheme(Type componentType)
+		{
+			var scheme = ScriptableObject.CreateInstance<ONNodeScheme>();
+			scheme.TargetType = componentType;
 
-            var nodeAttribue = ONUtilities.GetAttribute<ONNodeAttribute>(componentType, true);
-            if (nodeAttribue != null)
-            {
-                scheme.Name = Path.GetFileName(nodeAttribue.Name);
-                scheme.CustomInspector = nodeAttribue.CustomInspector;
-            }
+			var nodeAttribue = ONUtilities.GetAttribute<ONNodeAttribute>(componentType, true);
+			if (nodeAttribue != null)
+			{
+				scheme.Name = Path.GetFileName(nodeAttribue.Name);
+				scheme.CustomInspector = nodeAttribue.CustomInspector;
+			}
 
-            var selfAttribute = ONUtilities.GetAttribute<ONSelfOutputAttribute>(componentType, true);
-            if (selfAttribute != null)
-            {
-                scheme.SelfOutput = true;
-            }
+			var selfAttribute = ONUtilities.GetAttribute<ONSelfOutputAttribute>(componentType, true);
+			if (selfAttribute != null)
+			{
+				scheme.SelfOutput = true;
+			}
 
-            var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            var membersInfos = componentType.GetMembers(bindingFlags);
-            foreach (var memberInfo in membersInfos)
-            {
-                if (memberInfo is FieldInfo || memberInfo is PropertyInfo || memberInfo is MethodInfo)
-                {
-                    var methodInfo = memberInfo as MethodInfo;
-                    if (methodInfo != null && methodInfo.IsSpecialName)
-                    {
-                        continue;
-                    }
+			var bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+			var membersInfos = componentType.GetMembers(bindingFlags);
+			foreach (var memberInfo in membersInfos)
+			{
+				if (memberInfo is FieldInfo || memberInfo is PropertyInfo || memberInfo is MethodInfo)
+				{
+					var methodInfo = memberInfo as MethodInfo;
+					if (methodInfo != null && methodInfo.IsSpecialName)
+					{
+						continue;
+					}
 
-                    var propertiesAttributes = memberInfo.GetCustomAttributes(typeof(ONPropertyAttribute), true);
-                    if (propertiesAttributes.Length == 0) continue;
+					var propertiesAttributes = memberInfo.GetCustomAttributes(typeof(ONPropertyAttribute), true);
+					if (propertiesAttributes.Length == 0) continue;
 
-                    foreach (ONPropertyAttribute propertyAttribute in propertiesAttributes)
-                    {
-                        var propertyScheme = new ONPropertyScheme();
-                        propertyScheme.Name = propertyAttribute.Name;
-                        propertyScheme.Member = memberInfo.Name;
-                        propertyScheme.SortIndex = propertyAttribute.SortIndex;
-                        propertyScheme.PropertyType = propertyAttribute.PropertyType;
+					foreach (ONPropertyAttribute propertyAttribute in propertiesAttributes)
+					{
+						var propertyScheme = new ONPropertyScheme();
+						propertyScheme.Name = propertyAttribute.Name;
+						propertyScheme.Member = memberInfo.Name;
+						propertyScheme.SortIndex = propertyAttribute.SortIndex;
+						propertyScheme.PropertyType = propertyAttribute.PropertyType;
 
-                        if (propertyAttribute.PropertyType == ONPropertyType.Input)
-                        {
-                            scheme.InputPropertiesSchemes.Add(propertyScheme);
-                        }
-                        else if (propertyScheme.PropertyType == ONPropertyType.Output)
-                        {
-                            scheme.OutputPropertiesSchemes.Add(propertyScheme);
-                        }
-                    }
-                }
-            }
+						if (propertyAttribute.PropertyType == ONPropertyType.Input)
+						{
+							scheme.InputPropertiesSchemes.Add(propertyScheme);
+						}
+						else if (propertyScheme.PropertyType == ONPropertyType.Output)
+						{
+							scheme.OutputPropertiesSchemes.Add(propertyScheme);
+						}
+					}
+				}
+			}
 
-            scheme.InputPropertiesSchemes.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
-            scheme.OutputPropertiesSchemes.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
+			scheme.InputPropertiesSchemes.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
+			scheme.OutputPropertiesSchemes.Sort((x, y) => x.SortIndex.CompareTo(y.SortIndex));
 
-            return scheme;
-        }
+			return scheme;
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

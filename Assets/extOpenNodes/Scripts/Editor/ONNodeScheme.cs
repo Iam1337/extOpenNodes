@@ -1,95 +1,113 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
 using System;
 using System.Collections.Generic;
+//using UnityEditor;
 using UnityEditor;
 
 namespace extOpenNodes.Editor
 {
-    [Serializable]
-    public class ONNodeScheme : ScriptableObject
-    {
-        #region Public Vars
+	[Serializable]
+	public class ONNodeScheme : ScriptableObject
+	{
+		#region Public Vars
 
-        public string Name
-        {
-            get { return schemeName; }
-            set { schemeName = value; }
-        }
+		public string Name
+		{
+			get { return _schemeName; }
+			set { _schemeName = value; }
+		}
 
-        public bool SelfOutput
-        {
-            get { return selfOutput; }
-            set { selfOutput = value; }
-        }
+		public bool SelfOutput
+		{
+			get { return _selfOutput; }
+			set { _selfOutput = value; }
+		}
 
-        public List<ONPropertyScheme> InputPropertiesSchemes
-        {
-            get { return inputPropertiesSchemes; }
-            set { inputPropertiesSchemes = value; }
-        }
+		public List<ONPropertyScheme> InputPropertiesSchemes
+		{
+			get { return _inputPropertiesSchemes; }
+			set { _inputPropertiesSchemes = value; }
+		}
 
-        public List<ONPropertyScheme> OutputPropertiesSchemes
-        {
-            get { return outputPropertiesSchemes; }
-            set { outputPropertiesSchemes = value; }
-        }
+		public List<ONPropertyScheme> OutputPropertiesSchemes
+		{
+			get { return _outputPropertiesSchemes; }
+			set { _outputPropertiesSchemes = value; }
+		}
 
-        public bool CustomInspector
-        {
-            get { return _customInspector; }
-            set { _customInspector = value; }
-        }
+		public bool CustomInspector
+		{
+			get { return _customInspector; }
+			set { _customInspector = value; }
+		}
 
-        public Type TargetType
-        {
-            get
-            {
-                if (_type == null)
-					_type = Type.GetType(typeName, false);
+		public Type TargetType
+		{
+			get
+			{
+				if (_type == null)
+				{
+					if (_monoScript != null)
+						_type = _monoScript.GetClass();
+					else
+						_type = Type.GetType(_typeName);
+				}
 
-                return _type;
-            }
-            set
-            {
-                _type = value;
-                typeName = _type.AssemblyQualifiedName;
-            }
-        }
+				return _type;
+			}
+			set
+			{
+				_type = value;
+				_typeName = value.AssemblyQualifiedName;
+				_monoScript = ONEditorUtils.GetTypeScript(value);
 
-		public MonoScript Mono;
+				foreach (var property in _inputPropertiesSchemes)
+				{
+					property.TargetType = value;
+				}
 
-        #endregion
+				foreach (var property in _outputPropertiesSchemes)
+				{
+					property.TargetType = value;
+				}
+			}
+		}
 
-        #region Protected Vars
+		#endregion
 
-        [SerializeField]
-        protected string schemeName;
+		#region Private Vars
 
-        [SerializeField]
-        protected string typeName;
+		[SerializeField]
+		private string _schemeName;
 
-        [SerializeField]
-        protected bool selfOutput;
+		[SerializeField]
+		private string _typeName;
 
-        [SerializeField]
-        protected List<ONPropertyScheme> inputPropertiesSchemes = new List<ONPropertyScheme>();
+		[SerializeField]
+		private MonoScript _monoScript;
 
-        [SerializeField]
-        protected List<ONPropertyScheme> outputPropertiesSchemes = new List<ONPropertyScheme>();
+		[SerializeField]
+		private bool _selfOutput;
 
-        #endregion
+		[SerializeField]
+		private List<ONPropertyScheme> _inputPropertiesSchemes = new List<ONPropertyScheme>();
 
-        #region Private Vars
+		[SerializeField]
+		private List<ONPropertyScheme> _outputPropertiesSchemes = new List<ONPropertyScheme>();
 
-        [NonSerialized]
-        private bool _customInspector;
+		[NonSerialized]
+		private bool _customInspector;
 
-        [NonSerialized]
-        private Type _type;
+		[NonSerialized]
+		private Type _type;
 
-        #endregion
-    }
+		#endregion
+
+		#region Private Methods
+
+		#endregion
+	}
 }

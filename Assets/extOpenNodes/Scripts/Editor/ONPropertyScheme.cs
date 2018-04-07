@@ -1,66 +1,90 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
 using System;
 
 using extOpenNodes.Core;
+using UnityEditor;
 
 namespace extOpenNodes.Editor
 {
-    [Serializable]
-    public class ONPropertyScheme
-    {
-        #region Public Vars
+	[Serializable]
+	public class ONPropertyScheme
+	{
+		#region Public Vars
 
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
 
-        public string Member
-        {
-            get { return member; }
-            set { member = value; }
-        }
+		public string Member
+		{
+			get { return _member; }
+			set { _member = value; }
+		}
 
-        public int SortIndex
-        {
-            get { return _sortIndex; }
-            set { _sortIndex = value; }
-        }
+		public int SortIndex
+		{
+			get { return _sortIndex; }
+			set { _sortIndex = value; }
+		}
 
-        public ONPropertyType PropertyType
-        {
-            get { return propertyType; }
-            set { propertyType = value; }
-        }
+		public Type TargetType
+		{
+			get
+			{
+				if (_type == null)
+				{
+					if (_monoScript != null)
+						_type = _monoScript.GetClass();
+					else
+						_type = Type.GetType(_typeName);
+				}
 
-        #endregion
+				return _type;
+			}
+			set
+			{
+				_type = value;
+				_typeName = value.AssemblyQualifiedName;
+				_monoScript = ONEditorUtils.GetTypeScript(value);
+			}
+		}
 
-        #region Protected Vars 
+		public ONPropertyType PropertyType
+		{
+			get { return _propertyType; }
+			set { _propertyType = value; }
+		}
 
-        [SerializeField]
-        protected string name;
+		#endregion
 
-        [SerializeField]
-        protected string member;
+		#region Private Vars 
 
-        [SerializeField]
-        protected string typeName;
+		[SerializeField]
+		private string _name;
 
-        [SerializeField]
-        protected ONPropertyType propertyType;
+		[SerializeField]
+		private string _member;
 
-        #endregion
+		[SerializeField]
+		private string _typeName;
 
-        #region Private Vars
+		[SerializeField]
+		private MonoScript _monoScript;
 
-        [NonSerialized]
-        private int _sortIndex;
+		[SerializeField]
+		private ONPropertyType _propertyType;
 
-        #endregion
+		[NonSerialized]
+		private int _sortIndex;
 
-    }
+		[NonSerialized]
+		private Type _type;
+
+		#endregion
+	}
 }

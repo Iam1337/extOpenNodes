@@ -11,19 +11,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db869141ea79d42a8ac7ee3c05f89546, type: 3}
   m_Name: UnityEngine.Transform
   m_EditorClassIdentifier: 
-  schemeName: Transform
-  typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
+  _schemeName: Transform
+  _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
     PublicKeyToken=null
-  selfOutput: 0
-  inputPropertiesSchemes:
-  - name: Local Position
-    member: localPosition
-    typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
+  _monoScript: {fileID: 0}
+  _selfOutput: 0
+  _inputPropertiesSchemes:
+  - _name: Local Position
+    _member: localPosition
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
-    propertyType: 0
-  outputPropertiesSchemes:
-  - name: Local Position
-    member: localPosition
-    typeName: UnityEngine.Transform, UnityEngine, Version=0.0.0.0, Culture=neutral,
+    _monoScript: {fileID: 0}
+    _propertyType: 0
+  - _name: Local Rotation
+    _member: localRotation
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
-    propertyType: 1
+    _monoScript: {fileID: 0}
+    _propertyType: 0
+  - _name: Local Scale
+    _member: localScale
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    _monoScript: {fileID: 0}
+    _propertyType: 0
+  _outputPropertiesSchemes:
+  - _name: Local Position
+    _member: localPosition
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    _monoScript: {fileID: 0}
+    _propertyType: 1
+  - _name: Local Rotation
+    _member: localRotation
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    _monoScript: {fileID: 0}
+    _propertyType: 1
+  - _name: Local Scale
+    _member: localScale
+    _typeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    _monoScript: {fileID: 0}
+    _propertyType: 1

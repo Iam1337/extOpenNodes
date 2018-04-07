@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -6,82 +6,82 @@ using System;
 
 namespace extOpenNodes.Core
 {
-    [Serializable]
-    public class ONElement
-    {
-        #region Public Vars
+	[Serializable]
+	public class ONElement
+	{
+		#region Public Vars
 
-        public string ElementId
-        {
-            get { return _elementId; }
-            set { _elementId = value; }
-        }
+		public string ElementId
+		{
+			get { return _elementId; }
+			set { _elementId = value; }
+		}
 
-        public ONWorkflow Workflow
-        {
-            get { return workflow; }
-            set { workflow = value; }
-        }
+		public ONWorkflow Workflow
+		{
+			get { return workflow; }
+			set { workflow = value; }
+		}
 
-        public int EpochId
-        {
-            get { return _epochId; }
-            set { _epochId = value; }
-        }
+		public int EpochId
+		{
+			get { return _epochId; }
+			set { _epochId = value; }
+		}
 
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
-
-#if UNITY_EDITOR
-        // EDITOR ONLY
-        public virtual Vector2 ViewerPosition
-        {
-            get { return viewerRect.position; }
-            set { viewerRect.position = value; }
-        }
-
-        public virtual Vector2 ViewerSize
-        {
-            get { return viewerRect.size; }
-            set { viewerRect.size = value; }
-        }
-#endif
-
-        #endregion
-
-        #region Protected Vars
-
-        [NonSerialized]
-        protected ONWorkflow workflow; // Hack...
+		public string Name
+		{
+			get { return _name; }
+			set { _name = value; }
+		}
 
 #if UNITY_EDITOR
-        // EDITOR ONLY
-        [SerializeField]
-        protected Rect viewerRect;
+		// EDITOR ONLY
+		public virtual Vector2 ViewerPosition
+		{
+			get { return viewerRect.position; }
+			set { viewerRect.position = value; }
+		}
+
+		public virtual Vector2 ViewerSize
+		{
+			get { return viewerRect.size; }
+			set { viewerRect.size = value; }
+		}
 #endif
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Protected Vars
 
-        [SerializeField]
-        private string _elementId;
+		[NonSerialized]
+		protected ONWorkflow workflow; // Hack...
 
-        [SerializeField]
-        private string _name;
+#if UNITY_EDITOR
+		// EDITOR ONLY
+		[SerializeField]
+		protected Rect viewerRect;
+#endif
 
-        private int _epochId;
+		#endregion
 
-        #endregion
+		#region Private Vars
 
-        #region Public Methods
+		[SerializeField]
+		private string _elementId;
 
-        public virtual void Process()
-        { }
+		[SerializeField]
+		private string _name;
 
-        #endregion
-    }
+		private int _epochId;
+
+		#endregion
+
+		#region Public Methods
+
+		public virtual void Process()
+		{ }
+
+		#endregion
+	}
 }

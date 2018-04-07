@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,305 +13,305 @@ using extOpenNodes.Editor.Windows;
 
 namespace extOpenNodes.Editor
 {
-    public static class ONWorkflowUtils
-    {
-        #region Static Public Methods
+	public static class ONWorkflowUtils
+	{
+		#region Static Public Methods
 
-        public static ONWorkflow CreateWorkflow(bool autoOpen)
-        {
-            var gameObject = new GameObject("ON Workflow");
-            var workflow = gameObject.AddComponent<ONWorkflow>();
+		public static ONWorkflow CreateWorkflow(bool autoOpen)
+		{
+			var gameObject = new GameObject("ON Workflow");
+			var workflow = gameObject.AddComponent<ONWorkflow>();
 
-            Undo.RegisterCreatedObjectUndo(gameObject, "Create Workflow");
+			Undo.RegisterCreatedObjectUndo(gameObject, "Create Workflow");
 
-            if (autoOpen)
-            {
-                ONWorkflowWindow.OpenWorkflow(workflow);
-            }
+			if (autoOpen)
+			{
+				ONWorkflowWindow.OpenWorkflow(workflow);
+			}
 
-            return workflow;
-        }
+			return workflow;
+		}
 
-        public static ONNode CreateNode(ONWorkflow workflow, Type componentType)
-        {
-            var nodesRoot = workflow.NodesRoot;
-            if (nodesRoot != null)
-            {
-                var component = nodesRoot.AddComponent(componentType);
-                if (component == null)
-                {
-                    Debug.Log("TODO: Error!");
-                    return null;
-                }
+		public static ONNode CreateNode(ONWorkflow workflow, Type componentType)
+		{
+			var nodesRoot = workflow.NodesRoot;
+			if (nodesRoot != null)
+			{
+				var component = nodesRoot.AddComponent(componentType);
+				if (component == null)
+				{
+					Debug.Log("TODO: Error!");
+					return null;
+				}
 
-                return CreateNode(workflow, component);
-            }
+				return CreateNode(workflow, component);
+			}
 
-            return null;
-        }
+			return null;
+		}
 
-        public static ONNode CreateNode(ONWorkflow workflow, Component component)
-        {
-            var node = workflow.CreateNode(component);
-           
-            var componentType = component.GetType();
+		public static ONNode CreateNode(ONWorkflow workflow, Component component)
+		{
+			var node = workflow.CreateNode(component);
 
-            var schemes = ONNodesUtils.GetSchemes(componentType);
-            if (schemes.Count > 0)
-            {
-                ONNodesUtils.RebuildNode(workflow, node, schemes[0]);
-            }
-            else
-            {
-                node.Name = ONEditorUtils.TypeFriendlyName(componentType);
-            }
+			var componentType = component.GetType();
 
-            if (!node.CustomInspector) node.HideInspector = true;
+			var schemes = ONNodesUtils.GetSchemes(componentType);
+			if (schemes.Count > 0)
+			{
+				ONNodesUtils.RebuildNode(workflow, node, schemes[0]);
+			}
+			else
+			{
+				node.Name = ONEditorUtils.TypeFriendlyName(componentType);
+			}
 
-            return node;
-        }
+			if (!node.CustomInspector) node.HideInspector = true;
 
-        public static void RemoveNode(ONWorkflow workflow, ONNode node)
-        {
-            var component = node.Target;
-            if (component != null)
-            {
-                if (component.gameObject == workflow.NodesRoot)
-                {
-                    GameObject.DestroyImmediate(component);
-                }
-            }
+			return node;
+		}
 
-            RemoveLinks(workflow, node);
+		public static void RemoveNode(ONWorkflow workflow, ONNode node)
+		{
+			var component = node.Target;
+			if (component != null)
+			{
+				if (component.gameObject == workflow.NodesRoot)
+				{
+					GameObject.DestroyImmediate(component);
+				}
+			}
 
-            workflow.RemoveNode(node);
-        }
+			RemoveLinks(workflow, node);
 
-        public static ONLink CreateLink(ONWorkflow workflow, ONProperty firstProperty, ONProperty secondProperty)
-        {
-            ONLinkType linkType;
-            ONProperty sourceProperty = null;
-            ONProperty targetProperty = null;
+			workflow.RemoveNode(node);
+		}
 
-            if (!CheckPropertyPair(firstProperty, secondProperty, out sourceProperty, out targetProperty))
-                return null;
+		public static ONLink CreateLink(ONWorkflow workflow, ONProperty firstProperty, ONProperty secondProperty)
+		{
+			ONLinkType linkType;
+			ONProperty sourceProperty = null;
+			ONProperty targetProperty = null;
 
-            if (TryLinkProperties(sourceProperty, targetProperty, out linkType))
-            {
-                if (linkType == ONLinkType.Event && !AddEvent(sourceProperty, targetProperty))
-                {
-                    return null;
-                }
+			if (!CheckPropertyPair(firstProperty, secondProperty, out sourceProperty, out targetProperty))
+				return null;
 
-                if (linkType == ONLinkType.Value)
-                {
-                    RemoveLinks(workflow, targetProperty);
-                }
+			if (TryLinkProperties(sourceProperty, targetProperty, out linkType))
+			{
+				if (linkType == ONLinkType.Event && !AddEvent(sourceProperty, targetProperty))
+				{
+					return null;
+				}
 
-                var link = workflow.CreateLink(sourceProperty, targetProperty);
-                link.LinkType = linkType;
+				if (linkType == ONLinkType.Value)
+				{
+					RemoveLinks(workflow, targetProperty);
+				}
 
-                return link;
-            }
+				var link = workflow.CreateLink(sourceProperty, targetProperty);
+				link.LinkType = linkType;
 
-            return null;
-        }
+				return link;
+			}
 
-        public static void RemoveLink(ONWorkflow workflow, ONLink link)
-        {
-            if (link.LinkType == ONLinkType.Event)
-            {
-                RemoveEvent(link.SourceProperty, link.TargetProperty);
-            }
+			return null;
+		}
 
-            workflow.RemoveLink(link);
-        }
+		public static void RemoveLink(ONWorkflow workflow, ONLink link)
+		{
+			if (link.LinkType == ONLinkType.Event)
+			{
+				RemoveEvent(link.SourceProperty, link.TargetProperty);
+			}
 
-        public static void RemoveLinks(ONWorkflow worflow, ONNode node)
-        {
-            var properties = worflow.GetNodeProperties(node);
-            foreach (var property in properties)
-            {
-                RemoveLinks(worflow, property);
-            }
-        }
+			workflow.RemoveLink(link);
+		}
 
-        public static void RemoveLinks(ONWorkflow workflow, ONProperty property)
-        {
-            var links = workflow.GetElementLinks(property);
-            foreach (var link in links)
-            {
-                RemoveLink(workflow, link);
-            }
-        }
+		public static void RemoveLinks(ONWorkflow worflow, ONNode node)
+		{
+			var properties = worflow.GetNodeProperties(node);
+			foreach (var property in properties)
+			{
+				RemoveLinks(worflow, property);
+			}
+		}
 
-        public static bool CheckPropertyPair(ONProperty firstProperty, ONProperty secondProperty, out ONProperty sourceProperty, out ONProperty targetProperty)
-        {
-            sourceProperty = null;
-            targetProperty = null;
+		public static void RemoveLinks(ONWorkflow workflow, ONProperty property)
+		{
+			var links = workflow.GetElementLinks(property);
+			foreach (var link in links)
+			{
+				RemoveLink(workflow, link);
+			}
+		}
 
-            if (firstProperty.PropertyType == ONPropertyType.Input)
-            {
-                targetProperty = firstProperty;
-            }
-            else
-            {
-                sourceProperty = firstProperty;
-            }
-            if (secondProperty.PropertyType == ONPropertyType.Input)
-            {
-                if (targetProperty != null) return false;
-                targetProperty = secondProperty;
-            }
-            else
-            {
-                if (sourceProperty != null) return false;
-                sourceProperty = secondProperty;
-            }
+		public static bool CheckPropertyPair(ONProperty firstProperty, ONProperty secondProperty, out ONProperty sourceProperty, out ONProperty targetProperty)
+		{
+			sourceProperty = null;
+			targetProperty = null;
 
-            return true;
-        }
+			if (firstProperty.PropertyType == ONPropertyType.Input)
+			{
+				targetProperty = firstProperty;
+			}
+			else
+			{
+				sourceProperty = firstProperty;
+			}
+			if (secondProperty.PropertyType == ONPropertyType.Input)
+			{
+				if (targetProperty != null) return false;
+				targetProperty = secondProperty;
+			}
+			else
+			{
+				if (sourceProperty != null) return false;
+				sourceProperty = secondProperty;
+			}
 
-        public static bool TryLinkProperties(ONProperty sourceProperty, ONProperty targetProperty, out ONLinkType linkType)
-        {
-            linkType = ONLinkType.Value;
+			return true;
+		}
 
-            if (sourceProperty.Node == targetProperty.Node)
-                return false;
+		public static bool TryLinkProperties(ONProperty sourceProperty, ONProperty targetProperty, out ONLinkType linkType)
+		{
+			linkType = ONLinkType.Value;
 
-            var sourceType = sourceProperty.ValueType;
-            var targetType = targetProperty.ValueType;
+			if (sourceProperty.Node == targetProperty.Node)
+				return false;
 
-            if (targetType.IsEqualsOrSubclass(typeof(UnityEventBase)))
-            {
-                linkType = ONLinkType.Event;
+			var sourceType = sourceProperty.ValueType;
+			var targetType = targetProperty.ValueType;
 
-                var sourceReflectionMember = sourceProperty.ReflectionMember;
-                if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
-                {
-                    return true;
-                }
+			if (targetType.IsEqualsOrSubclass(typeof(UnityEventBase)))
+			{
+				linkType = ONLinkType.Event;
 
-                return false;
-            }
+				var sourceReflectionMember = sourceProperty.ReflectionMember;
+				if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
+				{
+					return true;
+				}
 
-            if (targetType == sourceType || targetType.IsAssignableFrom(sourceType))
-            {
-                return true;
-            }
+				return false;
+			}
 
-            try
-            {
-                if (sourceType != typeof(string))
-                {
-                    var convertedValue = Convert.ChangeType(sourceProperty.GetValue(), targetType);
-                    return convertedValue != null;
-                }
-            }
-            catch
-            {
-                return false;
-            }
+			if (targetType == sourceType || targetType.IsAssignableFrom(sourceType))
+			{
+				return true;
+			}
 
-            return true;
-        }
+			try
+			{
+				if (sourceType != typeof(string))
+				{
+					var convertedValue = Convert.ChangeType(sourceProperty.GetValue(), targetType);
+					return convertedValue != null;
+				}
+			}
+			catch
+			{
+				return false;
+			}
 
-        #endregion
+			return true;
+		}
 
-        #region Static Private Methods
+		#endregion
 
-        private static bool AddEvent(ONProperty sourceProperty, ONProperty targetProperty)
-        {
-            MethodInfo addMethodInfo = null;
-            Type eventType = null;
+		#region Static Private Methods
 
-            var targetType = targetProperty.ValueType;
+		private static bool AddEvent(ONProperty sourceProperty, ONProperty targetProperty)
+		{
+			MethodInfo addMethodInfo = null;
+			Type eventType = null;
 
-            if (HasAddPersistentMethodInfo(targetType, out addMethodInfo, out eventType))
-            {
-                var sourceReflectionMember = sourceProperty.ReflectionMember;
-                if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
-                {
-                    var customDelegate = sourceReflectionMember.CreateDelegate(eventType);
-                    if (customDelegate != null)
-                    {
-                        addMethodInfo.Invoke(targetProperty.GetValue(), new object[] { customDelegate });
+			var targetType = targetProperty.ValueType;
 
-                        return true;
-                    }
-                }
-            }
+			if (HasAddPersistentMethodInfo(targetType, out addMethodInfo, out eventType))
+			{
+				var sourceReflectionMember = sourceProperty.ReflectionMember;
+				if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
+				{
+					var customDelegate = sourceReflectionMember.CreateDelegate(eventType);
+					if (customDelegate != null)
+					{
+						addMethodInfo.Invoke(targetProperty.GetValue(), new object[] { customDelegate });
 
-            return false;
-        }
+						return true;
+					}
+				}
+			}
 
-        private static void RemoveEvent(ONProperty sourceProperty, ONProperty targetProperty)
-        {
-            MethodInfo removeMethodInfo = null;
+			return false;
+		}
 
-            var targetType = targetProperty.ValueType;
+		private static void RemoveEvent(ONProperty sourceProperty, ONProperty targetProperty)
+		{
+			MethodInfo removeMethodInfo = null;
 
-            if (HasRemovePersistentMethodInfo(targetType, out removeMethodInfo))
-            {
-                var sourceReflectionMember = sourceProperty.ReflectionMember;
-                if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
-                {
-                    var sourceTarget = sourceReflectionMember.Target;
-                    var sourceMethodInfo = sourceReflectionMember.MemberInfo as MethodInfo;
+			var targetType = targetProperty.ValueType;
 
-                    removeMethodInfo.Invoke(targetProperty.GetValue(), new object[] { sourceTarget, sourceMethodInfo });
-                }
-            }
-        }
+			if (HasRemovePersistentMethodInfo(targetType, out removeMethodInfo))
+			{
+				var sourceReflectionMember = sourceProperty.ReflectionMember;
+				if (sourceReflectionMember != null && sourceReflectionMember.IsMethod())
+				{
+					var sourceTarget = sourceReflectionMember.Target;
+					var sourceMethodInfo = sourceReflectionMember.MemberInfo as MethodInfo;
 
-        private static bool HasAddPersistentMethodInfo(Type targetType, out MethodInfo addMethodInfo, out Type eventType)
-        {
-            addMethodInfo = null;
-            eventType = null;
+					removeMethodInfo.Invoke(targetProperty.GetValue(), new object[] { sourceTarget, sourceMethodInfo });
+				}
+			}
+		}
 
-            var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-            var methodsInfos = targetType.GetMethods(bindingFlags);
+		private static bool HasAddPersistentMethodInfo(Type targetType, out MethodInfo addMethodInfo, out Type eventType)
+		{
+			addMethodInfo = null;
+			eventType = null;
 
-            foreach (var methodInfo in methodsInfos)
-            {
-                var parametersInfos = methodInfo.GetParameters();
-                if (parametersInfos.Length != 1) continue;
+			var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+			var methodsInfos = targetType.GetMethods(bindingFlags);
 
-                if (methodInfo.Name == "AddPersistentListener")
-                {
-                    addMethodInfo = methodInfo;
-                    eventType = parametersInfos[0].ParameterType;
+			foreach (var methodInfo in methodsInfos)
+			{
+				var parametersInfos = methodInfo.GetParameters();
+				if (parametersInfos.Length != 1) continue;
 
-                    return true;
-                }
-            }
+				if (methodInfo.Name == "AddPersistentListener")
+				{
+					addMethodInfo = methodInfo;
+					eventType = parametersInfos[0].ParameterType;
 
-            return false;
-        }
+					return true;
+				}
+			}
 
-        private static bool HasRemovePersistentMethodInfo(Type targetType, out MethodInfo removeMethodInfo)
-        {
-            removeMethodInfo = null;
+			return false;
+		}
 
-            var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
-            var methodsInfos = targetType.GetMethods(bindingFlags);
+		private static bool HasRemovePersistentMethodInfo(Type targetType, out MethodInfo removeMethodInfo)
+		{
+			removeMethodInfo = null;
 
-            foreach (var methodInfo in methodsInfos)
-            {
-                var parametersInfos = methodInfo.GetParameters();
-                if (parametersInfos.Length != 2) continue;
+			var bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+			var methodsInfos = targetType.GetMethods(bindingFlags);
 
-                if (methodInfo.Name == "RemovePersistentListener")
-                {
-                    removeMethodInfo = methodInfo;
+			foreach (var methodInfo in methodsInfos)
+			{
+				var parametersInfos = methodInfo.GetParameters();
+				if (parametersInfos.Length != 2) continue;
 
-                    return true;
-                }
-            }
+				if (methodInfo.Name == "RemovePersistentListener")
+				{
+					removeMethodInfo = methodInfo;
 
-            return false;
-        }
+					return true;
+				}
+			}
 
-        #endregion
-    }
+			return false;
+		}
+
+		#endregion
+	}
 }

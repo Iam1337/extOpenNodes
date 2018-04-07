@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -11,106 +11,109 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Editors
 {
-    [CustomEditor(typeof(ONNodeScheme), true)]
-    public class ONNodeSchemeEditor : UnityEditor.Editor
-    {
-        #region Private Static Vars
+	[CustomEditor(typeof(ONNodeScheme), true)]
+	public class ONNodeSchemeEditor : UnityEditor.Editor
+	{
+		#region Private Static Vars
 
-        private static readonly GUIContent _workflowContent = new GUIContent("Node Scheme:");
+		private static readonly GUIContent _workflowContent = new GUIContent("Node Scheme:");
 
-        private static readonly GUIContent _nameContent = new GUIContent("Name:");
+		private static readonly GUIContent _nameContent = new GUIContent("Name:");
 
-        private static readonly GUIContent _selfOutputContent = new GUIContent("Self Output:");
+		private static readonly GUIContent _selfOutputContent = new GUIContent("Self Output:");
 
-        private static readonly GUIContent _inputPropertySchemesContent = new GUIContent("Input Properties Schemes:");
+		private static readonly GUIContent _inputPropertySchemesContent = new GUIContent("Input Properties Schemes:");
 
-        private static readonly GUIContent _outputPropertySchemesContent = new GUIContent("Output Properties Schemes:");
+		private static readonly GUIContent _outputPropertySchemesContent = new GUIContent("Output Properties Schemes:");
 
 		private static readonly GUIContent _settingsContent = new GUIContent("Settings:");
 
-		private static readonly GUIContent _componentScriptContent = new GUIContent("Component Script:");
+		//private static readonly GUIContent _componentScriptContent = new GUIContent("Component Script:");
 
-        #endregion
+		#endregion
 
-        #region Public Vars
+		#region Public Vars
 
-        #endregion
+		#endregion
 
-        #region Protected Vars
+		#region Protected Vars
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Private Vars
 
-        private ONNodeScheme _target;
+		private ONNodeScheme _target;
 
-        private SerializedProperty _nameProperty;
+		private SerializedProperty _nameProperty;
 
-        private SerializedProperty _selfOutputProperty;
+		private SerializedProperty _selfOutputProperty;
 
-        private SerializedProperty _inputPropertiesSchemesProperty;
+		private SerializedProperty _inputPropertiesSchemesProperty;
 
-        private SerializedProperty _outputPropertiesSchemesProperty;
+		private SerializedProperty _outputPropertiesSchemesProperty;
 
 		private SerializedProperty _typeNameProperty;
 
-        private ReorderableList _inputReordableList;
+		private SerializedProperty _monoScriptProperty;
 
-        private ReorderableList _outputReordableList;
+		private ReorderableList _inputReordableList;
 
-        #endregion
+		private ReorderableList _outputReordableList;
 
-        #region Unity Methods
+		#endregion
 
-        protected void OnEnable()
-        {
-            _target = target as ONNodeScheme;
+		#region Unity Methods
 
-            _nameProperty = serializedObject.FindProperty("schemeName");
-            _selfOutputProperty = serializedObject.FindProperty("selfOutput");
-            _inputPropertiesSchemesProperty = serializedObject.FindProperty("inputPropertiesSchemes");
-            _outputPropertiesSchemesProperty = serializedObject.FindProperty("outputPropertiesSchemes");
-			_typeNameProperty = serializedObject.FindProperty("typeName");
+		protected void OnEnable()
+		{
+			_target = target as ONNodeScheme;
 
-            _inputReordableList = new ReorderableList(serializedObject, _inputPropertiesSchemesProperty, true, true, true, true);
-            _inputReordableList.elementHeight = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 3;
-            _inputReordableList.drawHeaderCallback += (rect) => { GUI.Label(rect, _inputPropertySchemesContent); };
-            _inputReordableList.drawElementCallback = DrawInputElementCallback;
-            _inputReordableList.onAddCallback = OnInputAddCallback;
+			_nameProperty = serializedObject.FindProperty("_schemeName");
+			_selfOutputProperty = serializedObject.FindProperty("_selfOutput");
+			_inputPropertiesSchemesProperty = serializedObject.FindProperty("_inputPropertiesSchemes");
+			_outputPropertiesSchemesProperty = serializedObject.FindProperty("_outputPropertiesSchemes");
+			_monoScriptProperty = serializedObject.FindProperty("_monoScript");
+			_typeNameProperty = serializedObject.FindProperty("_typeName");
 
-            _outputReordableList = new ReorderableList(serializedObject, _outputPropertiesSchemesProperty, true, true, true, true);
-            _outputReordableList.elementHeight = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 3;
-            _outputReordableList.drawHeaderCallback += (rect) => { GUI.Label(rect, _outputPropertySchemesContent); };
-            _outputReordableList.drawElementCallback = (rect, index, isActive, isFocused) => { EditorGUI.PropertyField(rect, _inputPropertiesSchemesProperty.GetArrayElementAtIndex(index), GUIContent.none);};
-            _outputReordableList.drawElementCallback = DrawOutputElementCallback;
-            _outputReordableList.onAddCallback = OnOutputAddCallback;
-        }
+			_inputReordableList = new ReorderableList(serializedObject, _inputPropertiesSchemesProperty, true, true, true, true);
+			_inputReordableList.elementHeight = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 3;
+			_inputReordableList.drawHeaderCallback += (rect) => { GUI.Label(rect, _inputPropertySchemesContent); };
+			_inputReordableList.drawElementCallback = DrawInputElementCallback;
+			_inputReordableList.onAddCallback = OnInputAddCallback;
 
-        #endregion
+			_outputReordableList = new ReorderableList(serializedObject, _outputPropertiesSchemesProperty, true, true, true, true);
+			_outputReordableList.elementHeight = EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing * 3;
+			_outputReordableList.drawHeaderCallback += (rect) => { GUI.Label(rect, _outputPropertySchemesContent); };
+			_outputReordableList.drawElementCallback = (rect, index, isActive, isFocused) => { EditorGUI.PropertyField(rect, _inputPropertiesSchemesProperty.GetArrayElementAtIndex(index), GUIContent.none); };
+			_outputReordableList.drawElementCallback = DrawOutputElementCallback;
+			_outputReordableList.onAddCallback = OnOutputAddCallback;
+		}
 
-        #region Public Methods
+		#endregion
 
-        public override void OnInspectorGUI()
-        {
-            var defaultColor = GUI.color;
+		#region Public Methods
 
-            serializedObject.Update();
+		public override void OnInspectorGUI()
+		{
+			var defaultColor = GUI.color;
 
-            // LOGO
-            GUILayout.Space(10);
-            ONEditorLayout.Logo();
-            GUILayout.Space(5);
+			serializedObject.Update();
 
-            EditorGUI.BeginChangeCheck();
+			// LOGO
+			GUILayout.Space(10);
+			ONEditorLayout.Logo();
+			GUILayout.Space(5);
 
-            // INSPECTOR
-            GUILayout.Label(_workflowContent, EditorStyles.boldLabel);
-            GUILayout.BeginVertical("box");
+			EditorGUI.BeginChangeCheck();
 
-            // SCHEME NAME
-            GUI.color = IsNameAvaible() ? defaultColor : Color.red;
-            EditorGUILayout.PropertyField(_nameProperty, _nameContent);
-            GUI.color = defaultColor;
+			// INSPECTOR
+			GUILayout.Label(_workflowContent, EditorStyles.boldLabel);
+			GUILayout.BeginVertical("box");
+
+			// SCHEME NAME
+			GUI.color = IsNameAvaible() ? defaultColor : Color.red;
+			EditorGUILayout.PropertyField(_nameProperty, _nameContent);
+			GUI.color = defaultColor;
 
 			if (_target.TargetType != null)
 			{
@@ -118,7 +121,7 @@ namespace extOpenNodes.Editor.Editors
 				EditorGUILayout.PropertyField(_selfOutputProperty, _selfOutputContent);
 			}
 
-            GUILayout.EndVertical();
+			GUILayout.EndVertical();
 
 			if (_target.TargetType != null)
 			{
@@ -129,72 +132,72 @@ namespace extOpenNodes.Editor.Editors
 				DrawClassSettings();
 			}
 
-            var change = EditorGUI.EndChangeCheck();
-            if (change) serializedObject.ApplyModifiedProperties();
-        }
+			var change = EditorGUI.EndChangeCheck();
+			if (change) serializedObject.ApplyModifiedProperties();
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Methods
+		#region Protected Methods
 
-        #endregion
+		#endregion
 
-        #region Private Methods
+		#region Private Methods
 
-        private bool IsNameAvaible()
-        {
-            var schemes = ONNodesUtils.GetSchemes(_target.TargetType);
-            foreach (var scheme in schemes)
-            {
-                if (scheme == _target)
-                    continue;
+		private bool IsNameAvaible()
+		{
+			var schemes = ONNodesUtils.GetSchemes(_target.TargetType);
+			foreach (var scheme in schemes)
+			{
+				if (scheme == _target)
+					continue;
 
-                if (scheme.Name.Equals(_target.Name, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return false;
-                }
-            }
+				if (scheme.Name.Equals(_target.Name, StringComparison.InvariantCultureIgnoreCase))
+				{
+					return false;
+				}
+			}
 
-            return true;
-        }
+			return true;
+		}
 
-        private void OnInputAddCallback(ReorderableList list)
-        {
-            OnAddCallback(_inputPropertiesSchemesProperty, list, ONPropertyType.Input);
-        }
+		private void OnInputAddCallback(ReorderableList list)
+		{
+			OnAddCallback(_inputPropertiesSchemesProperty, list, ONPropertyType.Input);
+		}
 
-        private void OnOutputAddCallback(ReorderableList list)
-        {
-            OnAddCallback(_outputPropertiesSchemesProperty, list, ONPropertyType.Output);
-        }
+		private void OnOutputAddCallback(ReorderableList list)
+		{
+			OnAddCallback(_outputPropertiesSchemesProperty, list, ONPropertyType.Output);
+		}
 
-        private void OnAddCallback(SerializedProperty property, ReorderableList list, ONPropertyType propertyType)
-        {
-            property.InsertArrayElementAtIndex(property.arraySize);
+		private void OnAddCallback(SerializedProperty property, ReorderableList list, ONPropertyType propertyType)
+		{
+			property.InsertArrayElementAtIndex(property.arraySize);
 
-            var newProperty = property.GetArrayElementAtIndex(property.arraySize - 1);
+			var newProperty = property.GetArrayElementAtIndex(property.arraySize - 1);
 
-            newProperty.FindPropertyRelative("typeName").stringValue = _target.TargetType.AssemblyQualifiedName;
-            newProperty.FindPropertyRelative("name").stringValue = "Property";
-            newProperty.FindPropertyRelative("propertyType").enumValueIndex = (int)propertyType;
-        }
+			newProperty.FindPropertyRelative("_typeName").stringValue = _target.TargetType.AssemblyQualifiedName;
+			newProperty.FindPropertyRelative("_name").stringValue = "Property";
+			newProperty.FindPropertyRelative("_propertyType").enumValueIndex = (int)propertyType;
+		}
 
-        private void DrawInputElementCallback(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            DrawElementCallback(_inputPropertiesSchemesProperty, rect, index, isActive, isFocused);
-        }
+		private void DrawInputElementCallback(Rect rect, int index, bool isActive, bool isFocused)
+		{
+			DrawElementCallback(_inputPropertiesSchemesProperty, rect, index, isActive, isFocused);
+		}
 
-        private void DrawOutputElementCallback(Rect rect, int index, bool isActive, bool isFocused)
-        {
-            DrawElementCallback(_outputPropertiesSchemesProperty, rect, index, isActive, isFocused);
-        }
+		private void DrawOutputElementCallback(Rect rect, int index, bool isActive, bool isFocused)
+		{
+			DrawElementCallback(_outputPropertiesSchemesProperty, rect, index, isActive, isFocused);
+		}
 
-        private void DrawElementCallback(SerializedProperty property, Rect rect, int index, bool isActive, bool isFocused)
-        {
-            rect.y += 1;
+		private void DrawElementCallback(SerializedProperty property, Rect rect, int index, bool isActive, bool isFocused)
+		{
+			rect.y += 1;
 
-            EditorGUI.PropertyField(rect, property.GetArrayElementAtIndex(index), GUIContent.none);
-        }
+			EditorGUI.PropertyField(rect, property.GetArrayElementAtIndex(index), GUIContent.none);
+		}
 
 		private void DrawProperties()
 		{
@@ -221,14 +224,18 @@ namespace extOpenNodes.Editor.Editors
 			GUILayout.Label(_settingsContent, EditorStyles.boldLabel);
 			GUILayout.BeginVertical("box");
 
-			var script = (MonoScript)EditorGUILayout.ObjectField(null, typeof(MonoScript), false);
-			if (script != null)
+			var monoScript = (MonoScript)EditorGUILayout.ObjectField(null, typeof(MonoScript), false);
+			if (monoScript != null)
 			{
-				var scriptClass = script.GetClass();
+				var scriptClass = monoScript.GetClass();
 				if (scriptClass != null)
 				{
 					_target.TargetType = scriptClass;
 					_typeNameProperty.stringValue = scriptClass.AssemblyQualifiedName;
+					_monoScriptProperty.objectReferenceValue = monoScript;
+
+					UpdatePropertiesTypes(_inputPropertiesSchemesProperty, monoScript);
+					UpdatePropertiesTypes(_outputPropertiesSchemesProperty, monoScript);
 
 					EditorUtility.SetDirty(target);
 				}
@@ -237,6 +244,19 @@ namespace extOpenNodes.Editor.Editors
 			GUILayout.EndVertical();
 		}
 
-        #endregion
-    }
+		private void UpdatePropertiesTypes(SerializedProperty arrayProperty, MonoScript monoScript)
+		{
+			var scriptClass = monoScript.GetClass();
+			var size = arrayProperty.arraySize;
+
+			for (var i = 0; i < size; i++)
+			{
+				var property = arrayProperty.GetArrayElementAtIndex(i);
+				property.FindPropertyRelative("_typeName").stringValue = scriptClass.AssemblyQualifiedName;
+				property.FindPropertyRelative("_monoScript").objectReferenceValue = monoScript;
+			}
+		}
+
+		#endregion
+	}
 }

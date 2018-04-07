@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -6,124 +6,124 @@ using System;
 
 namespace extOpenNodes.Core
 {
-    [Serializable]
-    public class ONProperty : ONElement
-    {
-        #region Public Vars
+	[Serializable]
+	public class ONProperty : ONElement
+	{
+		#region Public Vars
 
-        public ONPropertyType PropertyType
-        {
-            get { return _propertyType; }
-            set { _propertyType = value; }
-        }
+		public ONPropertyType PropertyType
+		{
+			get { return _propertyType; }
+			set { _propertyType = value; }
+		}
 
-        public Type ValueType
-        {
-            get
-            {
-                if (_targetCast && Node != null && Node.Target != null)
-                {
-                    return Node.Target.GetType();
-                }
+		public Type ValueType
+		{
+			get
+			{
+				if (_targetCast && Node != null && Node.Target != null)
+				{
+					return Node.Target.GetType();
+				}
 
-                if (_reflectionMember != null &&
-                    _reflectionMember.IsValid())
-                {
-                    return _reflectionMember.ValueType;
-                }
+				if (_reflectionMember != null &&
+					_reflectionMember.IsValid())
+				{
+					return _reflectionMember.ValueType;
+				}
 
-                return null;
-            }
-        }
+				return null;
+			}
+		}
 
-        public ONNode Node
-        {
-            get
-            {
-                if (_node == null && Workflow != null)
-                    _node = Workflow.GetElement(_nodeId) as ONNode;
+		public ONNode Node
+		{
+			get
+			{
+				if (_node == null && Workflow != null)
+					_node = Workflow.GetElement(_nodeId) as ONNode;
 
-                return _node;
-            }
-            set
-            {
-                _node = value;
-                _nodeId = _node.ElementId;
-            }
-        }
+				return _node;
+			}
+			set
+			{
+				_node = value;
+				_nodeId = _node.ElementId;
+			}
+		}
 
-        public bool TargetCast
-        {
-            get { return _targetCast; }
-            set { _targetCast = value; }
-        }
+		public bool TargetCast
+		{
+			get { return _targetCast; }
+			set { _targetCast = value; }
+		}
 
-        public int SortIndex
-        {
-            get { return _index; }
-            set { _index = value; }
-        }
+		public int SortIndex
+		{
+			get { return _index; }
+			set { _index = value; }
+		}
 
-        public ONReflectionMember ReflectionMember
-        {
-            get { return _reflectionMember; }
-            set { _reflectionMember = value; }
-        }
+		public ONReflectionMember ReflectionMember
+		{
+			get { return _reflectionMember; }
+			set { _reflectionMember = value; }
+		}
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Private Vars
 
-        [SerializeField]
-        private int _index;
+		[SerializeField]
+		private int _index;
 
-        [SerializeField]
-        private string _nodeId;
+		[SerializeField]
+		private string _nodeId;
 
-        [SerializeField]
-        private bool _targetCast = false;
+		[SerializeField]
+		private bool _targetCast = false;
 
-        [SerializeField]
-        private ONPropertyType _propertyType;
+		[SerializeField]
+		private ONPropertyType _propertyType;
 
-        [SerializeField]
-        private ONReflectionMember _reflectionMember;
-       
-        [NonSerialized]
-        private ONNode _node;
+		[SerializeField]
+		private ONReflectionMember _reflectionMember;
 
-        #endregion
+		[NonSerialized]
+		private ONNode _node;
 
-        #region Public Methods
+		#endregion
 
-        public void SetValue(object value)
-        {
-            if (_targetCast)
-                return;
+		#region Public Methods
 
-            if (_reflectionMember != null &&
-                _reflectionMember.IsValid() &&
-                _reflectionMember.CanWrite)
-            {
-                _reflectionMember.SetValue(value);
-            }
-        }
+		public void SetValue(object value)
+		{
+			if (_targetCast)
+				return;
 
-        public object GetValue()
-        {
-            if (_targetCast)
-                return Node.Target;
+			if (_reflectionMember != null &&
+				_reflectionMember.IsValid() &&
+				_reflectionMember.CanWrite)
+			{
+				_reflectionMember.SetValue(value);
+			}
+		}
 
-            if (_reflectionMember != null &&
-                _reflectionMember.IsValid() &&
-                _reflectionMember.CanRead)
-            {
-                return _reflectionMember.GetValue();
-            }
+		public object GetValue()
+		{
+			if (_targetCast)
+				return Node.Target;
 
-            return null;
-        }
+			if (_reflectionMember != null &&
+				_reflectionMember.IsValid() &&
+				_reflectionMember.CanRead)
+			{
+				return _reflectionMember.GetValue();
+			}
 
-        #endregion
-    }
+			return null;
+		}
+
+		#endregion
+	}
 }

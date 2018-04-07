@@ -1,9 +1,9 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 namespace extOpenNodes.Core
 {
-    public interface IONNodeProcess
-    {
-        void NodeProcess(ONNode node);
-    }
+	public interface IONNodeProcess
+	{
+		void NodeProcess(ONNode node);
+	}
 }

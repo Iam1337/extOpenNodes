@@ -77,15 +77,18 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 500
     m_PVRBounces: 2
-    m_PVRFiltering: 0
+    m_PVRFilterTypeDirect: 0
+    m_PVRFilterTypeIndirect: 0
+    m_PVRFilterTypeAO: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousColorSigma: 1
-    m_PVRFilteringAtrousNormalSigma: 1
-    m_PVRFilteringAtrousPositionSigma: 1
+    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
+    m_PVRFilteringAtrousPositionSigmaIndirect: 2
+    m_PVRFilteringAtrousPositionSigmaAO: 1
+    m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -107,6 +110,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    debug:
+      m_Flags: 0
   m_NavMeshData: {fileID: 0}
 --- !u!1 &268003026
 GameObject:
@@ -138,11 +143,11 @@ MonoBehaviour:
   _nodes:
   - viewerRect:
       serializedVersion: 2
-      x: 21
-      y: 100
-      width: 170
-      height: 80
-    _elementId: a74de1ed2f054012b73bc696440ddd54
+      x: 54
+      y: 51
+      width: 174
+      height: 116
+    _elementId: 36d1e2f66bed43118c0059d1ba0c2f3e
     _name: Transform
     _inputProperties:
     - viewerRect:
@@ -151,49 +156,232 @@ MonoBehaviour:
         y: 39
         width: 16
         height: 16
-      _elementId: c0d0a5ef8ab9423e9b710d747d44b5a9
+      _elementId: 034f4e7f02d145d6a2e87b4c04ff1622
       _name: Local Position
       _index: 0
-      _nodeId: a74de1ed2f054012b73bc696440ddd54
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
       _targetCast: 0
       _propertyType: 0
       _reflectionMember:
         target: {fileID: 1006019820}
         member: localPosition
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 57
+        width: 16
+        height: 16
+      _elementId: 759303649e004e198ad96fb86f3faa7f
+      _name: Local Rotation
+      _index: 0
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localRotation
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 75
+        width: 16
+        height: 16
+      _elementId: 59abfa9440d84c22aa408804265491c4
+      _name: Local Scale
+      _index: 0
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localScale
     _outputProperties:
     - viewerRect:
         serializedVersion: 2
-        x: 172
+        x: 176
         y: 39
         width: 16
         height: 16
-      _elementId: f8cae8fbee4f4bc6936b407648d637e7
+      _elementId: 4c715293ef474219a893d3edcb9ad513
       _name: Local Position
       _index: 0
-      _nodeId: a74de1ed2f054012b73bc696440ddd54
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
       _targetCast: 0
       _propertyType: 1
       _reflectionMember:
         target: {fileID: 1006019820}
         member: localPosition
+    - viewerRect:
+        serializedVersion: 2
+        x: 176
+        y: 57
+        width: 16
+        height: 16
+      _elementId: 67a17383ccd047e0bf3aebcb1726eb93
+      _name: Local Rotation
+      _index: 0
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localRotation
+    - viewerRect:
+        serializedVersion: 2
+        x: 176
+        y: 75
+        width: 16
+        height: 16
+      _elementId: 9bcc1c0447ac480d90b011158d465fa2
+      _name: Local Scale
+      _index: 0
+      _nodeId: 36d1e2f66bed43118c0059d1ba0c2f3e
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1006019820}
+        member: localScale
     _target: {fileID: 1006019820}
     _customInspector: 0
     _hideInspector: 1
   - viewerRect:
       serializedVersion: 2
-      x: 268
-      y: 154
-      width: 150
-      height: 80
-    _elementId: b7a4d5a2027a430da2bd1d0d47deb44c
-    _name: Component
-    _inputProperties: []
-    _outputProperties: []
+      x: 282
+      y: 27
+      width: 174
+      height: 116
+    _elementId: d1549957587c4bcfa5d535d357d9e808
+    _name: Transform
+    _inputProperties:
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 39
+        width: 16
+        height: 16
+      _elementId: 755d2f0e98d14a6b9647556d961b358d
+      _name: Local Position
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localPosition
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 57
+        width: 16
+        height: 16
+      _elementId: 9fab7fb496304e4497382e6bd4b21ff6
+      _name: Local Rotation
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localRotation
+    - viewerRect:
+        serializedVersion: 2
+        x: -18
+        y: 75
+        width: 16
+        height: 16
+      _elementId: 3eac673dfad94c17a6e858db65ef5d6a
+      _name: Local Scale
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 0
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localScale
+    _outputProperties:
+    - viewerRect:
+        serializedVersion: 2
+        x: 176
+        y: 39
+        width: 16
+        height: 16
+      _elementId: 0b470a7b5a51401b88baa6822d4339fd
+      _name: Local Position
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localPosition
+    - viewerRect:
+        serializedVersion: 2
+        x: 176
+        y: 57
+        width: 16
+        height: 16
+      _elementId: 66d48d7d6cfa4a2b90adbe08dccf32e9
+      _name: Local Rotation
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localRotation
+    - viewerRect:
+        serializedVersion: 2
+        x: 176
+        y: 75
+        width: 16
+        height: 16
+      _elementId: 65c54c0f4ed042dc9ea6d07b18a3b05f
+      _name: Local Scale
+      _index: 0
+      _nodeId: d1549957587c4bcfa5d535d357d9e808
+      _targetCast: 0
+      _propertyType: 1
+      _reflectionMember:
+        target: {fileID: 1378302601}
+        member: localScale
     _target: {fileID: 1378302601}
     _customInspector: 0
     _hideInspector: 1
-  _links: []
-  _enviromentPositon: {x: 38, y: 21}
+  _links:
+  - viewerRect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    _elementId: 00edf49b6d654388932825cb3c66545f
+    _name: 
+    _sourceId: 4c715293ef474219a893d3edcb9ad513
+    _targetId: 755d2f0e98d14a6b9647556d961b358d
+    _linkType: 0
+  - viewerRect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    _elementId: 1d16324e51df47bd82bdf96dcab6c609
+    _name: 
+    _sourceId: 67a17383ccd047e0bf3aebcb1726eb93
+    _targetId: 9fab7fb496304e4497382e6bd4b21ff6
+    _linkType: 0
+  - viewerRect:
+      serializedVersion: 2
+      x: 0
+      y: 0
+      width: 0
+      height: 0
+    _elementId: fc3fbe630c7f4beb9d31e249e3cc9f77
+    _name: 
+    _sourceId: 9bcc1c0447ac480d90b011158d465fa2
+    _targetId: 3eac673dfad94c17a6e858db65ef5d6a
+    _linkType: 0
+  _enviromentPositon: {x: 0, y: 0}
   _nodesRoot: {fileID: 1012412286}
 --- !u!4 &268003028
 Transform:
@@ -280,11 +468,11 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!4 &549279075
 Transform:
   m_ObjectHideFlags: 0
@@ -346,20 +534,6 @@ Light:
   m_Lightmapping: 4
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
-  m_FalloffTable:
-    m_Table[0]: 0
-    m_Table[1]: 0
-    m_Table[2]: 0
-    m_Table[3]: 0
-    m_Table[4]: 0
-    m_Table[5]: 0
-    m_Table[6]: 0
-    m_Table[7]: 0
-    m_Table[8]: 0
-    m_Table[9]: 0
-    m_Table[10]: 0
-    m_Table[11]: 0
-    m_Table[12]: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
@@ -433,6 +607,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -448,6 +623,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -481,8 +657,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1006019816}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.64, y: 0.78, z: -1.4}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1403082430}
@@ -543,6 +719,7 @@ MeshRenderer:
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -558,6 +735,7 @@ MeshRenderer:
   m_PreserveUVs: 1
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
@@ -591,7 +769,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1378302597}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []

@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -10,135 +10,135 @@ using extOpenNodes.Editor.Panels;
 
 namespace extOpenNodes.Editor.Windows
 {
-    public abstract class ONWindow : EditorWindow
-    {
-        #region Public Vars
+	public abstract class ONWindow : EditorWindow
+	{
+		#region Public Vars
 
-        public abstract ONPanel RootPanel { get; }
+		public abstract ONPanel RootPanel { get; }
 
-        #endregion
+		#endregion
 
-        #region Unity Methods
+		#region Unity Methods
 
-        protected virtual void Awake()
-        { }
+		protected virtual void Awake()
+		{ }
 
-        protected abstract void Update();
+		protected abstract void Update();
 
-        protected virtual void OnEnable()
-        {
-            LoadWindowSettings();
-        }
+		protected virtual void OnEnable()
+		{
+			LoadWindowSettings();
+		}
 
-        protected virtual void OnDisable()
-        {
-            SaveWindowSettings();
-        }
+		protected virtual void OnDisable()
+		{
+			SaveWindowSettings();
+		}
 
-        protected virtual void OnDestroy()
-        { }
+		protected virtual void OnDestroy()
+		{ }
 
-        protected abstract void OnGUI();
+		protected abstract void OnGUI();
 
-        #endregion
+		#endregion
 
-        #region Protected Methods
+		#region Protected Methods
 
-        protected virtual void LoadWindowSettings()
-        { }
+		protected virtual void LoadWindowSettings()
+		{ }
 
-        protected virtual void SaveWindowSettings()
-        { }
+		protected virtual void SaveWindowSettings()
+		{ }
 
-        #endregion
-    }
+		#endregion
+	}
 
-    public class ONWindow<TWindow, TPanel> : ONWindow where TWindow : ONWindow where TPanel : ONPanel
-    {
-        #region Public Vars
+	public class ONWindow<TWindow, TPanel> : ONWindow where TWindow : ONWindow where TPanel : ONPanel
+	{
+		#region Public Vars
 
-        public static TWindow Instance
-        {
-            get { return GetWindow<TWindow>(false, "", false); }
-        }
+		public static TWindow Instance
+		{
+			get { return GetWindow<TWindow>(false, "", false); }
+		}
 
-        public override ONPanel RootPanel
-        {
-            get { return rootPanel; }
-        }
+		public override ONPanel RootPanel
+		{
+			get { return rootPanel; }
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Vars
+		#region Protected Vars
 
-        protected TPanel rootPanel
-        {
-            get
-            {
-                if (_rootPanel == null)
-                    _rootPanel = CreateRoot();
+		protected TPanel rootPanel
+		{
+			get
+			{
+				if (_rootPanel == null)
+					_rootPanel = CreateRoot();
 
-                return _rootPanel;
-            }
-        }
+				return _rootPanel;
+			}
+		}
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Private Vars
 
-        private TPanel _rootPanel;
+		private TPanel _rootPanel;
 
-        #endregion
+		#endregion
 
-        #region Unity Methods
+		#region Unity Methods
 
-        protected override void Update()
-        {
-            if (rootPanel != null)
-                rootPanel.Update();
-        }
+		protected override void Update()
+		{
+			if (rootPanel != null)
+				rootPanel.Update();
+		}
 
-        protected override void OnGUI()
-        {
-            DrawRootPanel(new Rect(0, 0, position.width, position.height));
-        }
+		protected override void OnGUI()
+		{
+			DrawRootPanel(new Rect(0, 0, position.width, position.height));
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Methods
+		#region Protected Methods
 
-        protected virtual T CreatePanel<T>(string panelId) where T : ONPanel
-        {
-            var panel = (T)Activator.CreateInstance(typeof(T), panelId, this);
-            if (panel == null) return null;
+		protected virtual T CreatePanel<T>(string panelId) where T : ONPanel
+		{
+			var panel = (T)Activator.CreateInstance(typeof(T), panelId, this);
+			if (panel == null) return null;
 
 
-            return panel;
-        }
+			return panel;
+		}
 
-        protected TPanel CreateRoot()
-        {
-            if (_rootPanel != null)
-            {
-                Debug.LogErrorFormat("[{0}] Already has root panel!", GetType());
-                return default(TPanel);
-            }
+		protected TPanel CreateRoot()
+		{
+			if (_rootPanel != null)
+			{
+				Debug.LogErrorFormat("[{0}] Already has root panel!", GetType());
+				return default(TPanel);
+			}
 
-            var panel = (TPanel)Activator.CreateInstance(typeof(TPanel), this, "root" + name);
+			var panel = (TPanel)Activator.CreateInstance(typeof(TPanel), this, "root" + name);
 
-            _rootPanel = panel;
+			_rootPanel = panel;
 
-            return panel;
-        }
+			return panel;
+		}
 
-        protected void DrawRootPanel(Rect contentRect)
-        {
-            if (rootPanel == null) return;
+		protected void DrawRootPanel(Rect contentRect)
+		{
+			if (rootPanel == null) return;
 
-            rootPanel.Rect = contentRect;
-            rootPanel.Draw();
-        }
+			rootPanel.Rect = contentRect;
+			rootPanel.Draw();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

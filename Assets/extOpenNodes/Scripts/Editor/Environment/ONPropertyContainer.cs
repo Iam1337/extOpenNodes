@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
@@ -9,103 +9,103 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Environments
 {
-    public class ONPropertyContainer : ONElementContainer<ONProperty>
-    {
-        #region Private Vars
+	public class ONPropertyContainer : ONElementContainer<ONProperty>
+	{
+		#region Private Vars
 
-        private string _tooltip;
+		private string _tooltip;
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Private Vars
 
-        public ONProperty Property
-        {
-            get { return element; }
-        }
+		public ONProperty Property
+		{
+			get { return element; }
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public ONPropertyContainer(ONProperty property, ONNodeContainer nodeContainer, ONWorkflowEnvironment workflowEditor) : base(property, workflowEditor)
-        {
-            Parent = nodeContainer;
+		public ONPropertyContainer(ONProperty property, ONNodeContainer nodeContainer, ONWorkflowEnvironment workflowEditor) : base(property, workflowEditor)
+		{
+			Parent = nodeContainer;
 
-            if (Property.ValueType != null)
-            {
-                _tooltip = ONEditorUtils.TypeFriendlyName(Property.ValueType);
-            }
-            if (Property.ReflectionMember != null &&
-                Property.ReflectionMember.IsMethod())
-            {
-                _tooltip = ONEditorUtils.MemberFrendlyName(Property.ReflectionMember.MemberInfo);
-            }
-        }
+			if (Property.ValueType != null)
+			{
+				_tooltip = ONEditorUtils.TypeFriendlyName(Property.ValueType);
+			}
+			if (Property.ReflectionMember != null &&
+				Property.ReflectionMember.IsMethod())
+			{
+				_tooltip = ONEditorUtils.MemberFrendlyName(Property.ReflectionMember.MemberInfo);
+			}
+		}
 
-        public override void Draw()
-        {
-            var defaultColor = GUI.color;
-            var propertyRect = Rect;
+		public override void Draw()
+		{
+			var defaultColor = GUI.color;
+			var propertyRect = Rect;
 
-            if (propertyRect.Contains(Event.current.mousePosition))
-            {
-                Environment.FocusedPropertyContainer = this;
-                Environment.DrawTooltip(_tooltip);
+			if (propertyRect.Contains(Event.current.mousePosition))
+			{
+				Environment.FocusedPropertyContainer = this;
+				Environment.DrawTooltip(_tooltip);
 
-                ProcessEvents();
+				ProcessEvents();
 
-                GUI.color = Color.grey;
-            }
+				GUI.color = Color.grey;
+			}
 
-            GUI.DrawTexture(propertyRect, ONEditorTextures.PropertyTexture);
+			GUI.DrawTexture(propertyRect, ONEditorTextures.PropertyTexture);
 
-            var linkSize = new Vector2(EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight) / 2;
-            var linkRect = new Rect(propertyRect.center - linkSize / 2f, linkSize);
+			var linkSize = new Vector2(EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight) / 2;
+			var linkRect = new Rect(propertyRect.center - linkSize / 2f, linkSize);
 
-            GUI.DrawTexture(linkRect, ONEditorTextures.LinkTexture);
+			GUI.DrawTexture(linkRect, ONEditorTextures.LinkTexture);
 
-            GUI.color = defaultColor;
-        }
+			GUI.color = defaultColor;
+		}
 
-        #endregion
+		#endregion
 
-        #region Private Methods
+		#region Private Methods
 
-        private void ProcessEvents()
-        {
-            if (Environment.SelectedPropertyContainer == null)
-            {
-                if (Event.current.type == EventType.MouseDown && Event.current.button == (int)MouseButton.LeftMouse)
-                {
-                    Environment.SelectedPropertyContainer = this;
-                }
-            }
+		private void ProcessEvents()
+		{
+			if (Environment.SelectedPropertyContainer == null)
+			{
+				if (Event.current.type == EventType.MouseDown && Event.current.button == (int)MouseButton.LeftMouse)
+				{
+					Environment.SelectedPropertyContainer = this;
+				}
+			}
 
-            if (Environment.SelectedPropertyContainer != null && Environment.SelectedPropertyContainer != this)
-            {
-                if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.LeftMouse)
-                {
-                    var link = ONWorkflowUtils.CreateLink(Environment.Workflow, Environment.SelectedPropertyContainer.Property, Property);
-                    if (link != null)
-                    {
-                        Environment.SaveWorkflow();
-                    }
+			if (Environment.SelectedPropertyContainer != null && Environment.SelectedPropertyContainer != this)
+			{
+				if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.LeftMouse)
+				{
+					var link = ONWorkflowUtils.CreateLink(Environment.Workflow, Environment.SelectedPropertyContainer.Property, Property);
+					if (link != null)
+					{
+						Environment.SaveWorkflow();
+					}
 
-                    Environment.SelectedPropertyContainer = null;
+					Environment.SelectedPropertyContainer = null;
 
-                    Event.current.Use();
-                }
-            }
+					Event.current.Use();
+				}
+			}
 
-            if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.RightMouse)
-            {
-                ONWorkflowUtils.RemoveLinks(Environment.Workflow, Property);
+			if (Event.current.type == EventType.MouseUp && Event.current.button == (int)MouseButton.RightMouse)
+			{
+				ONWorkflowUtils.RemoveLinks(Environment.Workflow, Property);
 
-                Event.current.Use();
-            }
-        }
+				Event.current.Use();
+			}
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

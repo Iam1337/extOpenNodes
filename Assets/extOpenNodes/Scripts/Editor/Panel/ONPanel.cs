@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -11,174 +11,174 @@ using extOpenNodes.Editor.Windows;
 
 namespace extOpenNodes.Editor.Panels
 {
-    public class ONPanel
-    {
-        #region Extensions
+	public class ONPanel
+	{
+		#region Extensions
 
-        protected class PanelCoroutine
-        {
-            #region Static Public Methods
+		protected class PanelCoroutine
+		{
+			#region Static Public Methods
 
-            public static PanelCoroutine Create(IEnumerator routine)
-            {
-                var coroutine = new PanelCoroutine(routine);
-                coroutine.Start();
+			public static PanelCoroutine Create(IEnumerator routine)
+			{
+				var coroutine = new PanelCoroutine(routine);
+				coroutine.Start();
 
-                return coroutine;
-            }
+				return coroutine;
+			}
 
-            #endregion
+			#endregion
 
-            #region Private Vars
+			#region Private Vars
 
-            private readonly IEnumerator _routine;
+			private readonly IEnumerator _routine;
 
-            #endregion
+			#endregion
 
-            #region Public Method
+			#region Public Method
 
-            public PanelCoroutine(IEnumerator routine)
-            {
-                _routine = routine;
-            }
+			public PanelCoroutine(IEnumerator routine)
+			{
+				_routine = routine;
+			}
 
-            public void Start()
-            {
-                EditorApplication.update += Process;
-            }
+			public void Start()
+			{
+				EditorApplication.update += Process;
+			}
 
-            public void Stop()
-            {
-                EditorApplication.update -= Process;
-            }
+			public void Stop()
+			{
+				EditorApplication.update -= Process;
+			}
 
-            #endregion
+			#endregion
 
-            #region Private Methods
+			#region Private Methods
 
-            private void Process()
-            {
-                var process = _routine.MoveNext();
-                if (!process)
-                {
-                    Stop();
-                }
-            }
+			private void Process()
+			{
+				var process = _routine.MoveNext();
+				if (!process)
+				{
+					Stop();
+				}
+			}
 
-            #endregion
-        }
+			#endregion
+		}
 
-        #endregion
+		#endregion
 
-        #region Public Vars
+		#region Public Vars
 
-        public Rect Rect
-        {
-            get { return _rect; }
-            set { _rect = value; }
-        }
+		public Rect Rect
+		{
+			get { return _rect; }
+			set { _rect = value; }
+		}
 
-        public ONWindow ParentWindow
-        {
-            get { return _parentWindow; }
-        }
+		public ONWindow ParentWindow
+		{
+			get { return _parentWindow; }
+		}
 
-        public string PanelId
-        {
-            get { return _panelId; }
-            set { _panelId = value; }
-        }
+		public string PanelId
+		{
+			get { return _panelId; }
+			set { _panelId = value; }
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Vars
+		#region Protected Vars
 
-        protected ONWindow _parentWindow;
+		protected ONWindow _parentWindow;
 
-        protected string _panelId;
+		protected string _panelId;
 
-        #endregion
+		#endregion
 
-        #region Private Vars
+		#region Private Vars
 
-        private Rect _rect;
+		private Rect _rect;
 
-        private List<PanelCoroutine> _coroutines = new List<PanelCoroutine>();
+		private List<PanelCoroutine> _coroutines = new List<PanelCoroutine>();
 
-        #endregion
+		#endregion
 
-        #region Public Methods
+		#region Public Methods
 
-        public ONPanel(ONWindow parentWindow, string panelId)
-        {
-            _panelId = panelId;
-            _parentWindow = parentWindow;
-        }
+		public ONPanel(ONWindow parentWindow, string panelId)
+		{
+			_panelId = panelId;
+			_parentWindow = parentWindow;
+		}
 
-        public virtual void Update()
-        { }
+		public virtual void Update()
+		{ }
 
-        public virtual void Draw()
-        {
-            GUILayout.BeginArea(_rect);
-            // PRE DRAW
-            PreDrawContent();
+		public virtual void Draw()
+		{
+			GUILayout.BeginArea(_rect);
+			// PRE DRAW
+			PreDrawContent();
 
-            _rect.x = _rect.y = 0;
+			_rect.x = _rect.y = 0;
 
-            DrawContent(_rect);
+			DrawContent(_rect);
 
-            // POST DRAW
-            PostDrawContent();
+			// POST DRAW
+			PostDrawContent();
 
-            GUILayout.EndArea();
-        }
+			GUILayout.EndArea();
+		}
 
-        public virtual void StopCoroutines()
-        {
-            StopAllCoroutines();
-        }
+		public virtual void StopCoroutines()
+		{
+			StopAllCoroutines();
+		}
 
-        #endregion
+		#endregion
 
-        #region Protected Methods
+		#region Protected Methods
 
-        protected virtual void PreDrawContent()
-        { }
+		protected virtual void PreDrawContent()
+		{ }
 
-        protected virtual void DrawContent(Rect contentRect)
-        { }
+		protected virtual void DrawContent(Rect contentRect)
+		{ }
 
-        protected virtual void PostDrawContent()
-        { }
+		protected virtual void PostDrawContent()
+		{ }
 
-        protected PanelCoroutine StartCoroutine(IEnumerator routine)
-        {
-            var coroutine = PanelCoroutine.Create(routine);
+		protected PanelCoroutine StartCoroutine(IEnumerator routine)
+		{
+			var coroutine = PanelCoroutine.Create(routine);
 
-            _coroutines.Add(coroutine);
+			_coroutines.Add(coroutine);
 
-            return coroutine;
-        }
+			return coroutine;
+		}
 
-        protected void StopCoroutine(PanelCoroutine coroutine)
-        {
-            coroutine.Stop();
+		protected void StopCoroutine(PanelCoroutine coroutine)
+		{
+			coroutine.Stop();
 
-            if (_coroutines.Contains(coroutine))
-                _coroutines.Remove(coroutine);
-        }
+			if (_coroutines.Contains(coroutine))
+				_coroutines.Remove(coroutine);
+		}
 
-        protected void StopAllCoroutines()
-        {
-            foreach (var coroutine in _coroutines)
-            {
-                coroutine.Stop();
-            }
+		protected void StopAllCoroutines()
+		{
+			foreach (var coroutine in _coroutines)
+			{
+				coroutine.Stop();
+			}
 
-            _coroutines.Clear();
-        }
+			_coroutines.Clear();
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

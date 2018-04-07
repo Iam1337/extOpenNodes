@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
@@ -10,61 +10,57 @@ using extOpenNodes.Core;
 
 namespace extOpenNodes.Editor.Properties
 {
-    [CustomPropertyDrawer(typeof(ONPropertyScheme))]
-    public class ONPropertySchemeProperty : PropertyDrawer
-    {
-        #region Public Methods
+	[CustomPropertyDrawer(typeof(ONPropertyScheme))]
+	public class ONPropertySchemeProperty : PropertyDrawer
+	{
+		#region Public Methods
 
-        #endregion
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+		{
+			return base.GetPropertyHeight(property, label) * 2 + EditorGUIUtility.standardVerticalSpacing;
+		}
 
-        #region Public Methods
+		public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
+		{
+			var color = GUI.color;
+			var nameProperty = property.FindPropertyRelative("_name");
+			var memberProperty = property.FindPropertyRelative("_member");
+			var typeNameProperty = property.FindPropertyRelative("_typeName");
+			var targetType = Type.GetType(typeNameProperty.stringValue);
+			var propertyTypeProperty = property.FindPropertyRelative("_propertyType");
+			var propertyType = (ONPropertyType)propertyTypeProperty.enumValueIndex;
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return base.GetPropertyHeight(property, label) * 2 + EditorGUIUtility.standardVerticalSpacing;
-        }
+			EditorGUI.BeginProperty(rect, label, property);
 
-        public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
-        {
-            var color = GUI.color;
-            var nameProperty = property.FindPropertyRelative("name");
-            var memberProperty = property.FindPropertyRelative("member");
-            var typeNameProperty = property.FindPropertyRelative("typeName");
-            var targetType = Type.GetType(typeNameProperty.stringValue);
-            var propertyTypeProperty = property.FindPropertyRelative("propertyType");
-            var propertyType = (ONPropertyType)propertyTypeProperty.enumValueIndex;
+			rect = EditorGUI.PrefixLabel(rect, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            EditorGUI.BeginProperty(rect, label, property);
+			var indent = EditorGUI.indentLevel;
+			EditorGUI.indentLevel = 0;
 
-            rect = EditorGUI.PrefixLabel(rect, GUIUtility.GetControlID(FocusType.Passive), label);
+			var currentPosition = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
+			EditorGUI.PropertyField(currentPosition, nameProperty, GUIContent.none);
 
-            var indent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
+			currentPosition.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-            var currentPosition = new Rect(rect.x, rect.y, rect.width, EditorGUIUtility.singleLineHeight);
-            EditorGUI.PropertyField(currentPosition, nameProperty, GUIContent.none);
+			if (propertyType == ONPropertyType.Input)
+			{
+				memberProperty.stringValue = ONEditorLayout.InputMembersPopup(currentPosition, targetType, memberProperty.stringValue, GUIContent.none);
+			}
+			else
+			{
+				memberProperty.stringValue = ONEditorLayout.OutputMembersPopup(currentPosition, targetType, memberProperty.stringValue, GUIContent.none);
+			}
 
-            currentPosition.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+			EditorGUI.indentLevel = indent;
+			EditorGUI.EndProperty();
+		}
 
-            if (propertyType == ONPropertyType.Input)
-            {
-                memberProperty.stringValue = ONEditorLayout.InputMembersPopup(currentPosition, targetType, memberProperty.stringValue, GUIContent.none);
-            }
-            else
-            {
-                memberProperty.stringValue = ONEditorLayout.OutputMembersPopup(currentPosition, targetType, memberProperty.stringValue, GUIContent.none);
-            }
+		#endregion
 
-            EditorGUI.indentLevel = indent;
-            EditorGUI.EndProperty();
-        }
-
-        #endregion
-
-        #region Protected Methods
+		#region Protected Methods
 
 
 
-        #endregion
-    }
+		#endregion
+	}
 }

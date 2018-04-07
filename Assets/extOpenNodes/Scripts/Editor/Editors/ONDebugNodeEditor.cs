@@ -1,60 +1,60 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
 using UnityEditor;
 
-using extOpenNodes.Nodes;
+using extOpenNodes.Nodes.Debugs;
 
 namespace extOpenNodes.Editor.Editors
 {
-    [CustomEditor(typeof(ONDebugNode), true)]
-    public class ONDebugNodeEditor : UnityEditor.Editor
-    {
-        #region Static Private Vars
+	[CustomEditor(typeof(ONDebugLogNode), true)]
+	public class ONDebugNodeEditor : UnityEditor.Editor
+	{
+		#region Static Private Vars
 
-        private static GUIContent _valueContent = new GUIContent("Settings");
-        
-        #endregion
+		private static GUIContent _valueContent = new GUIContent("Settings");
 
-        #region Private Vars
+		#endregion
 
-        private SerializedProperty _debugProperty;
+		#region Private Vars
 
-        #endregion
+		private SerializedProperty _debugProperty;
 
-        #region Unity Methods
+		#endregion
 
-        protected void OnEnable()
-        {
-            _debugProperty = serializedObject.FindProperty("debug");
-        }
+		#region Unity Methods
 
-        #endregion
+		protected void OnEnable()
+		{
+			_debugProperty = serializedObject.FindProperty("debug");
+		}
 
-        #region Public Methods
+		#endregion
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
+		#region Public Methods
 
-            EditorGUI.BeginChangeCheck();
+		public override void OnInspectorGUI()
+		{
+			serializedObject.Update();
 
-            GUILayout.Label(_valueContent, ONEditorStyles.CenterBoldLabel);
-            EditorGUILayout.PropertyField(_debugProperty);
+			EditorGUI.BeginChangeCheck();
 
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-        }
+			GUILayout.Label(_valueContent, ONEditorStyles.CenterBoldLabel);
+			EditorGUILayout.PropertyField(_debugProperty);
 
-        #endregion
+			if (EditorGUI.EndChangeCheck())
+				serializedObject.ApplyModifiedProperties();
+		}
 
-        #region Protected Methods
+		#endregion
 
-        #endregion
+		#region Protected Methods
 
-        #region Private Methods
+		#endregion
 
-        #endregion
-    }
+		#region Private Methods
+
+		#endregion
+	}
 }

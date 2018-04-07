@@ -1,60 +1,60 @@
-﻿/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 using UnityEngine;
 
 using UnityEditor;
 
-using extOpenNodes.Nodes;
+using extOpenNodes.Nodes.Values;
 
 namespace extOpenNodes.Editor.Editors
 {
-    [CustomEditor(typeof(ONBaseValue), true)]
-    public class ONBaseValueEditor : UnityEditor.Editor
-    {
-        #region Static Private Vars
+	[CustomEditor(typeof(ONBaseValue), true)]
+	public class ONBaseValueEditor : UnityEditor.Editor
+	{
+		#region Static Private Vars
 
-        private static GUIContent _valueContent = new GUIContent("Value");
-        
-        #endregion
+		private static GUIContent _valueContent = new GUIContent("Value");
 
-        #region Private Vars
+		#endregion
 
-        private SerializedProperty _valueProperty;
+		#region Private Vars
 
-        #endregion
+		private SerializedProperty _valueProperty;
 
-        #region Unity Methods
+		#endregion
 
-        protected void OnEnable()
-        {
-            _valueProperty = serializedObject.FindProperty("value");
-        }
+		#region Unity Methods
 
-        #endregion
+		protected void OnEnable()
+		{
+			_valueProperty = serializedObject.FindProperty("value");
+		}
 
-        #region Public Methods
+		#endregion
 
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
+		#region Public Methods
 
-            EditorGUI.BeginChangeCheck();
+		public override void OnInspectorGUI()
+		{
+			serializedObject.Update();
 
-            GUILayout.Label(_valueContent, ONEditorStyles.CenterBoldLabel);
-            EditorGUILayout.PropertyField(_valueProperty, GUIContent.none);
+			EditorGUI.BeginChangeCheck();
 
-            if (EditorGUI.EndChangeCheck())
-                serializedObject.ApplyModifiedProperties();
-        }
+			GUILayout.Label(_valueContent, ONEditorStyles.CenterBoldLabel);
+			EditorGUILayout.PropertyField(_valueProperty, GUIContent.none);
 
-        #endregion
+			if (EditorGUI.EndChangeCheck())
+				serializedObject.ApplyModifiedProperties();
+		}
 
-        #region Protected Methods
+		#endregion
 
-        #endregion
+		#region Protected Methods
 
-        #region Private Methods
+		#endregion
 
-        #endregion
-    }
+		#region Private Methods
+
+		#endregion
+	}
 }

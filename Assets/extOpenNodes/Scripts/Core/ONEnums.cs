@@ -1,16 +1,16 @@
-/* Copyright (c) 2017 ExT (V.Sigalkin) */
+﻿/* Copyright (c) 2018 ExT (V.Sigalkin) */
 
 namespace extOpenNodes.Core
 {
-    public enum ONLinkType
-    {
-        Value,
-        Event
-    }
+	public enum ONLinkType
+	{
+		Value,
+		Event
+	}
 
-    public enum ONPropertyType
-    {
-        Input,
-        Output
-    }
+	public enum ONPropertyType
+	{
+		Input,
+		Output
+	}
 }
